@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import sys
 from datetime import date, datetime
 from pathlib import Path
@@ -68,6 +69,11 @@ def construir_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-alertas", type=int, default=40,
                         help="Máximo de alertas a mostrar por día; 0 = todas (default: %(default)s).")
     parser.add_argument("--salida", type=Path, help="Exporta las alertas a un CSV.")
+    parser.add_argument("--sin-graficas", action="store_true", help="No genera las gráficas PNG.")
+    parser.add_argument("--abrir", action="store_true",
+                        help="Abre la carpeta de gráficas al terminar (Windows).")
+    parser.add_argument("--dias-grafica", type=int, default=config.DIAS_HISTORIA_GRAFICAS,
+                        help="Días de historia en las gráficas (default: %(default)s).")
     parser.add_argument("--sin-color", action="store_true", help="Desactiva los colores.")
     parser.add_argument("-v", "--verbose", action="store_true", help="Muestra mensajes de depuración.")
     return parser
@@ -114,4 +120,29 @@ def main(argv: list[str] | None = None) -> int:
         total = exportar_csv(resultados, args.salida)
         logger.info("Se exportaron %d alertas a %s", total, args.salida)
 
+    if not args.sin_graficas and resultados:
+        # En modo histórico solo se grafica el último día evaluado.
+        _generar_graficas(datos, resultados[-1], niveles, args.dias_grafica, args.abrir)
+
     return max((r.severidad_maxima for r in resultados), default=0)
+
+
+def _generar_graficas(datos, resultado, niveles, dias: int, abrir: bool) -> None:
+    """Genera las gráficas sin interrumpir el monitoreo si algo falla."""
+    try:
+        from monitor_kpi.graficas import GeneradorGraficas
+
+        rutas = GeneradorGraficas(dias_historia=dias).generar(datos, resultado, niveles)
+    except ImportError as exc:
+        logger.warning("Gráficas omitidas: %s", exc)
+        return
+    except Exception:  # noqa: BLE001 - una gráfica fallida no debe tumbar el monitoreo
+        logger.exception("No se pudieron generar las gráficas.")
+        return
+
+    carpeta = rutas[0].parent.resolve()
+    logger.info("Gráficas generadas (%d) en: %s", len(rutas), carpeta)
+    for ruta in rutas:
+        logger.info("  - %s", ruta.name)
+    if abrir and hasattr(os, "startfile"):
+        os.startfile(carpeta)  # type: ignore[attr-defined]

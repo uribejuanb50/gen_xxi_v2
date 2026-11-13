@@ -151,6 +151,22 @@ class TestDetector(unittest.TestCase):
         self.assertIn("GRAVE", buffer.getvalue())
 
 
+class TestGraficas(unittest.TestCase):
+    def test_genera_png(self):
+        try:
+            from monitor_kpi.graficas import GeneradorGraficas
+            datos = _datos(5)
+            res = DetectorDesviaciones().evaluar(datos, D2, ["TOTAL", "CANAL"])
+            with tempfile.TemporaryDirectory() as tmp:
+                rutas = GeneradorGraficas(carpeta=Path(tmp)).generar(
+                    datos, res, ["TOTAL", "CANAL"])
+                self.assertTrue(all(r.exists() and r.stat().st_size > 0 for r in rutas))
+                self.assertEqual({r.name for r in rutas},
+                                 {"tendencia_TOTAL.png", "alertas_CANAL.png"})
+        except ImportError:
+            self.skipTest("matplotlib no instalado")
+
+
 class TestCarga(unittest.TestCase):
     CABECERA = "CANAL,FECHA,GERENCIA,UBICACION,ATENCION,USUARIO_CONEX," + ",".join(
         config.COLUMNAS_METRICA) + ",ANTIGUEDAD\n"

@@ -48,6 +48,12 @@ COLUMNAS_METRICA = (
 NIVELES_POR_DEFECTO = ("CANAL", "GERENCIA")
 NIVEL_TOTAL = "TOTAL"
 
+# ---------------------------------------------------------------------------
+# Gráficas
+# ---------------------------------------------------------------------------
+CARPETA_GRAFICAS = Path("salidas/graficas")  # se crea una subcarpeta por día
+DIAS_HISTORIA_GRAFICAS = 30                   # días hacia atrás que se grafican
+
 
 # ---------------------------------------------------------------------------
 # Definición de KPIs
