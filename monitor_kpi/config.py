@@ -13,7 +13,7 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Fuente de datos
 # ---------------------------------------------------------------------------
-RUTA_DATOS_POR_DEFECTO = Path("data/debug")
+RUTA_DATOS_POR_DEFECTO = Path(r"D:\OneDrive - Comunicacion Celular S.A.- Comcel S.A\JuanUribe\proyectos\GenXXI_V2\data\nube")
 EXTENSIONES_VALIDAS = (".txt", ".csv")
 SEPARADOR = ","
 FORMATO_FECHA = "%Y-%m-%d"  # año-mes-día, como viene en la fuente
