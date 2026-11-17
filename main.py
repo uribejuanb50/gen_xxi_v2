@@ -1,6 +1,10 @@
-"""Ejecuta el monitoreo de KPIs. Ver ``python main.py --help``."""
+import src.correos as correos
 
-from monitor_kpi.cli import main
+def main():
+    filas = [
+        ("persona1@claro.com.co", "Prueba Yulieth", "Este es un mensaje automatizado para ")
+    ]
+    pass
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()
