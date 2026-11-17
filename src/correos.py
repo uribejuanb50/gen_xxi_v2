@@ -1,9 +1,59 @@
+import json
 import time
 import datetime
 from openpyxl import load_workbook
 from openpyxl.utils import range_boundaries, get_column_letter
 
-def extraer_correos(
+import src.config as config
+
+
+def generar_mensaje_por_importancia( #entra una tanda de perfiles para mandar mensaje por importancia 
+    data_perfil, #entra una tanda de perfiles
+    importancia,
+    mensaje #la idea es que donde aparezca $USUARIO$ se remplaza por el nombre que aparece en 
+):
+    #por ahora solo hay un tipo de importancai, esto vendría de parte de la IA
+
+    correos = "; ".join(profile["correo"] for profile in data_perfil)
+
+    return (correos, "Usuarios", mensaje)
+
+def leer_encargados(
+    path_encargados,
+    ia_extraer,
+    cargos_extraer
+):
+    error_msg = "Solicitud no cordina con los parametros permitidos por el algoritmo"
+
+    with open(path_encargados, encoding="utf-8") as f:
+        datos = json.load(f)
+
+    if ia_extraer not in config.IAS_DESARROLLADAS:
+        raise ValueError(f"{error_msg} error en ia_extraer llega -> {ia_extraer}")
+    
+
+    if any(cargo not in config.CARGOS_VALIDOS for cargo in cargos_extraer):
+        raise ValueError(f"{error_msg} error en cargos extraer llega -> {cargos_extraer}")
+
+    cargos_ia = datos[ia_extraer]
+
+    responsables_a_mandar_correo = []
+
+    for cargo in cargos_extraer:
+        responsables_por_cargo = cargos_ia[cargo]
+
+        for encargado in responsables_por_cargo:
+
+            if not all(llave in config.CAMPOS_VALIDOS for llave in encargado):
+                raise KeyError("Campos no validos imposible mandarle correo a este usuario")
+
+            responsables_a_mandar_correo.append(encargado)
+
+    return responsables_a_mandar_correo #[{"nombre": nombre encargado, "correo": "correo@claro.com.co"}, ...,n]
+
+    pass
+
+def extraer_y_montar_correos(
     path_excel, hoja, nombre_tabla, filas, reintentos = 5
 ):
     wb = load_workbook(path_excel)
