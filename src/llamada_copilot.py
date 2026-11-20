@@ -24,6 +24,7 @@ import json
 import re
 import time
 import datetime
+from urllib.parse import urlparse
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -37,6 +38,7 @@ from selenium.common.exceptions import (
     WebDriverException,
     StaleElementReferenceException,
     ElementClickInterceptedException,
+    NoSuchElementException,
 )
 
 import src.config as config
@@ -60,18 +62,83 @@ def _sin_espacios(texto):
     return re.sub(r"\s+", "", texto or "")
 
 
+def _esperar(driver, timeout):
+    """
+    WebDriverWait que tolera elementos 'stale'. La página de Copilot se redibuja varias veces
+    (redirecciones de autenticación, React), así que un elemento encontrado puede desaparecer
+    medio segundo después: en vez de reventar, se vuelve a buscar en el siguiente sondeo.
+    """
+    return WebDriverWait(
+        driver,
+        timeout,
+        poll_frequency=0.5,
+        ignored_exceptions=(StaleElementReferenceException, NoSuchElementException),
+    )
+
+
+def _url_actual(driver):
+    try:
+        return driver.current_url or ""
+    except WebDriverException:
+        return ""
+
+
+def _host(url):
+    return urlparse(url).netloc.lower()
+
+
+def _es_dominio(host, dominios):
+    return any(host == d or host.endswith("." + d) for d in dominios)
+
+
 def _esperar_documento(driver, timeout=None):
     """Espera a que el navegador termine de cargar el documento (readyState = complete)."""
     timeout = timeout or config.COPILOT_TIMEOUT_CARGA
-    WebDriverWait(driver, timeout).until(
+    _esperar(driver, timeout).until(
         lambda d: d.execute_script("return document.readyState") == "complete"
     )
+
+
+def _esperar_url_estable(driver, segundos=None, timeout=None):
+    """Espera a que la URL deje de cambiar durante `segundos` (fin de redirecciones). No lanza error."""
+    segundos = segundos or config.COPILOT_SEG_URL_ESTABLE
+    limite = time.time() + (timeout or config.COPILOT_TIMEOUT_CARGA)
+    ultima, desde = None, time.time()
+
+    while time.time() < limite:
+        url = _url_actual(driver)
+        if url != ultima:
+            ultima, desde = url, time.time()
+        elif time.time() - desde >= segundos:
+            break
+        time.sleep(0.5)
+    return ultima
+
+
+def _caja_lista(driver):
+    """True si la caja de texto está en pantalla y habilitada (sin lanzar stale)."""
+    try:
+        return any(c.is_displayed() and c.is_enabled() for c in driver.find_elements(*SEL_CAJA_TEXTO))
+    except (StaleElementReferenceException, WebDriverException):
+        return False
 
 
 def _esperar_caja_texto(driver, timeout=None):
     """Espera a que la caja de texto de Copilot exista, sea visible y se pueda usar."""
     timeout = timeout or config.COPILOT_TIMEOUT_CARGA
-    return WebDriverWait(driver, timeout).until(EC.element_to_be_clickable(SEL_CAJA_TEXTO))
+    return _esperar(driver, timeout).until(EC.element_to_be_clickable(SEL_CAJA_TEXTO))
+
+
+def _reintentar_si_stale(funcion, *args, intentos=3):
+    """Ejecuta la función y, si un elemento quedó 'stale' por un redibujado, la repite."""
+    for intento in range(1, intentos + 1):
+        try:
+            return funcion(*args)
+        except StaleElementReferenceException:
+            if intento == intentos:
+                raise
+            _log("La página se redibujó durante la acción, se repite")
+            time.sleep(1)
 
 
 def _texto_caja(driver):
@@ -205,10 +272,32 @@ def crear_driver(mostrar_navegador=None):
     return driver
 
 
+def preparar_pestana(driver):
+    """
+    La política de la empresa abre una página predeterminada en cada pestaña nueva y esa página
+    redirige varias veces por autenticación. Aquí se deja terminar esa carga (URL quieta) y se
+    cierran las pestañas extra, para que Selenium no navegue encima de una redirección en curso.
+    """
+    _esperar_url_estable(driver)
+
+    try:
+        principal = driver.current_window_handle
+        for pestana in driver.window_handles:
+            if pestana != principal:
+                driver.switch_to.window(pestana)
+                driver.close()
+        driver.switch_to.window(principal)
+    except WebDriverException as e:
+        _log(f"No se pudieron cerrar pestañas extra ({type(e).__name__}), se continúa")
+        handles = driver.window_handles
+        if handles:
+            driver.switch_to.window(handles[0])
+
+
 def activar_chat_temporal(driver):
     """Activa 'Chat temporal' para no guardar la conversación en el historial. Si falla, sigue igual."""
     try:
-        boton = WebDriverWait(driver, 10).until(EC.element_to_be_clickable(SEL_CHAT_TEMPORAL))
+        boton = _esperar(driver, 10).until(EC.element_to_be_clickable(SEL_CHAT_TEMPORAL))
         ya_activo = "true" in (
             (boton.get_attribute("aria-pressed") or "") + (boton.get_attribute("aria-checked") or "")
         )
@@ -226,19 +315,57 @@ def abrir_copilot(driver):
     También sirve para empezar una conversación nueva con el mismo navegador.
     """
     _log("Abriendo Copilot...")
-    driver.get(config.COPILOT_URL)
-    _esperar_documento(driver)
+    preparar_pestana(driver)
 
     visible = getattr(driver, "mostrar_navegador", config.COPILOT_MOSTRAR_NAVEGADOR)
-    espera = config.COPILOT_TIEMPO_LOGIN if visible else config.COPILOT_TIMEOUT_CARGA
+    limite = time.time() + (config.COPILOT_TIEMPO_LOGIN if visible else config.COPILOT_TIMEOUT_CARGA)
 
-    try:
-        _esperar_caja_texto(driver, espera)
-    except TimeoutException:
+    driver.get(config.COPILOT_URL)
+    navegaciones = 1
+    url_ultima, url_desde = None, time.time()
+    caja_desde = None
+    aviso_login = False
+
+    # Se vigila a dónde termina la pestaña: Copilot, login de Microsoft o la página de la política
+    while time.time() < limite:
+        url = _url_actual(driver)
+        host = _host(url)
+
+        if url != url_ultima:
+            url_ultima, url_desde = url, time.time()
+        url_quieta = time.time() - url_desde >= config.COPILOT_SEG_URL_ESTABLE
+
+        if _es_dominio(host, config.COPILOT_DOMINIOS_COPILOT):
+            # En Copilot: la caja debe seguir lista un par de segundos (Copilot redibuja al autenticar)
+            if _caja_lista(driver):
+                caja_desde = caja_desde or time.time()
+                if time.time() - caja_desde >= config.COPILOT_SEG_CAJA_ESTABLE:
+                    break
+            else:
+                caja_desde = None
+
+        elif _es_dominio(host, config.COPILOT_DOMINIOS_LOGIN):
+            caja_desde = None
+            if not aviso_login:
+                _log("Pantalla de inicio de sesión de Microsoft" +
+                     (": inicia sesión en la ventana" if visible else ""))
+                aviso_login = True
+
+        else:
+            # Página ajena (la predeterminada de la empresa u otra): si se quedó ahí, se vuelve a Copilot
+            caja_desde = None
+            if url_quieta and navegaciones < config.COPILOT_MAX_NAVEGACIONES:
+                _log(f"La pestaña quedó en {host or url!r}, se vuelve a navegar a Copilot")
+                driver.get(config.COPILOT_URL)
+                navegaciones += 1
+                url_ultima, url_desde = None, time.time()
+
+        time.sleep(0.5)
+    else:
         _volcar_debug(driver, "abrir_copilot")
         raise RuntimeError(
-            "Copilot no cargó la caja de texto. Lo más probable es que la sesión no esté iniciada: "
-            "corre una vez con COPILOT_MOSTRAR_NAVEGADOR = True e inicia sesión en la ventana."
+            f"Copilot no cargó la caja de texto (última URL: {_url_actual(driver)}). "
+            "Si quedó en el login, corre una vez con COPILOT_MOSTRAR_NAVEGADOR = True e inicia sesión."
         )
 
     if config.COPILOT_CHAT_TEMPORAL:
@@ -247,45 +374,74 @@ def abrir_copilot(driver):
     _log("Copilot listo")
 
 
+def _limpiar_caja(driver):
+    caja = _esperar_caja_texto(driver)
+    caja.click()
+    caja.send_keys(Keys.CONTROL, "a")
+    caja.send_keys(Keys.DELETE)
+    return caja
+
+
+def _prompt_completo(driver, prompt, timeout):
+    objetivo = len(_sin_espacios(prompt)) * 0.98
+    try:
+        _esperar(driver, timeout).until(lambda d: len(_sin_espacios(_texto_caja(d))) >= objetivo)
+        return True
+    except TimeoutException:
+        return False
+
+
+def _escribir_insert_text(driver, prompt):
+    """Método 1: insertText (rápido, respeta saltos de línea y no dispara el envío con Enter)."""
+    caja = _limpiar_caja(driver)
+    driver.execute_script(
+        "arguments[0].focus(); document.execCommand('insertText', false, arguments[1]);", caja, prompt
+    )
+
+
+def _escribir_teclado(driver, prompt):
+    """Método 2: tecleo línea por línea con Shift+Enter (más lento pero seguro)."""
+    caja = _limpiar_caja(driver)
+    lineas = prompt.split("\n")
+    for i, linea in enumerate(lineas):
+        if linea:
+            caja.send_keys(linea)
+        if i < len(lineas) - 1:
+            caja.send_keys(Keys.SHIFT, Keys.ENTER)
+
+
 def insertar_prompt(driver, prompt):
     """Escribe el prompt en la caja de texto de Copilot y verifica que quedó completo."""
     if len(prompt) > config.COPILOT_MAX_CARACTERES:
         _log(f"OJO: el prompt tiene {len(prompt)} caracteres (límite configurado {config.COPILOT_MAX_CARACTERES})")
 
-    caja = _esperar_caja_texto(driver)
-    caja.click()
-    caja.send_keys(Keys.CONTROL, "a")
-    caja.send_keys(Keys.DELETE)
+    _reintentar_si_stale(_escribir_insert_text, driver, prompt)
 
-    # Método 1: insertText (rápido, respeta saltos de línea y no dispara el envío con Enter)
-    driver.execute_script(
-        "arguments[0].focus(); document.execCommand('insertText', false, arguments[1]);", caja, prompt
-    )
-
-    objetivo = len(_sin_espacios(prompt))
-    try:
-        WebDriverWait(driver, 10).until(lambda d: len(_sin_espacios(_texto_caja(d))) >= objetivo * 0.98)
-    except TimeoutException:
-        # Método 2: tecleo línea por línea con Shift+Enter (más lento pero seguro)
+    if not _prompt_completo(driver, prompt, 10):
         _log("insertText no dejó el prompt completo, se escribe línea por línea")
-        caja = _esperar_caja_texto(driver)
-        caja.click()
-        caja.send_keys(Keys.CONTROL, "a")
-        caja.send_keys(Keys.DELETE)
-        lineas = prompt.split("\n")
-        for i, linea in enumerate(lineas):
-            if linea:
-                caja.send_keys(linea)
-            if i < len(lineas) - 1:
-                caja.send_keys(Keys.SHIFT, Keys.ENTER)
+        _reintentar_si_stale(_escribir_teclado, driver, prompt)
 
-        try:
-            WebDriverWait(driver, 15).until(lambda d: len(_sin_espacios(_texto_caja(d))) >= objetivo * 0.98)
-        except TimeoutException:
+        if not _prompt_completo(driver, prompt, 15):
             _volcar_debug(driver, "insertar_prompt")
             raise RuntimeError("No se pudo escribir el prompt completo en Copilot")
 
     _log(f"Prompt insertado ({len(prompt)} caracteres)")
+
+
+def _boton_enviar_habilitado(driver):
+    return next(
+        (b for b in driver.find_elements(*SEL_BOTON_ENVIAR)
+         if b.is_displayed() and b.get_attribute("aria-disabled") != "true"),
+        False,
+    )
+
+
+def _click_enviar(driver):
+    boton = _esperar(driver, config.COPILOT_TIMEOUT_CARGA).until(_boton_enviar_habilitado)
+    try:
+        boton.click()
+    except ElementClickInterceptedException:
+        driver.execute_script("arguments[0].click();", boton)
 
 
 def mandar_prompt(driver):
@@ -296,24 +452,14 @@ def mandar_prompt(driver):
     respuestas_previas = len(_respuestas_en_pagina(driver))
 
     try:
-        boton = WebDriverWait(driver, config.COPILOT_TIMEOUT_CARGA).until(
-            lambda d: next(
-                (b for b in d.find_elements(*SEL_BOTON_ENVIAR)
-                 if b.is_displayed() and b.get_attribute("aria-disabled") != "true"),
-                False,
-            )
-        )
-        try:
-            boton.click()
-        except (ElementClickInterceptedException, StaleElementReferenceException):
-            driver.execute_script("arguments[0].click();", boton)
+        _reintentar_si_stale(_click_enviar, driver)
     except TimeoutException:
         _log("El botón Enviar no se habilitó, se intenta con Enter")
-        _esperar_caja_texto(driver).send_keys(Keys.ENTER)
+        _reintentar_si_stale(lambda d: _esperar_caja_texto(d).send_keys(Keys.ENTER), driver)
 
     # Confirmación: la caja se vacía cuando Copilot recibe el mensaje
     try:
-        WebDriverWait(driver, 20).until(lambda d: not _sin_espacios(_texto_caja(d)))
+        _esperar(driver, 20).until(lambda d: not _sin_espacios(_texto_caja(d)))
     except TimeoutException:
         _volcar_debug(driver, "mandar_prompt")
         raise RuntimeError("El prompt no se envió (la caja de texto sigue llena)")

@@ -105,3 +105,11 @@ PROMPT_COPILOT = (
     '{"importancia": "<ALTA|MEDIA|BAJA>", "correo": "<cuerpo del correo, saltos de línea como \\n>"}\n'
     f"{COPILOT_MARCA_FIN}"
 )
+
+# Manejo de la página predeterminada que abre la política de Edge en cada pestaña
+COPILOT_DOMINIOS_COPILOT = ["copilot.cloud.microsoft", "m365.cloud.microsoft"]
+COPILOT_DOMINIOS_LOGIN = ["login.microsoftonline.com", "login.microsoft.com", "login.live.com",
+                          "device.login.microsoftonline.com"]
+COPILOT_SEG_URL_ESTABLE = 3     # la URL debe quedarse quieta este tiempo para dar por terminada una redirección
+COPILOT_SEG_CAJA_ESTABLE = 2    # la caja de texto debe seguir lista este tiempo antes de usarla
+COPILOT_MAX_NAVEGACIONES = 5    # veces que se reintenta ir a Copilot si la pestaña termina en otra página
