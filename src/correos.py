@@ -17,7 +17,7 @@ def generar_mensaje_por_importancia( #entra una tanda de perfiles para mandar me
 
     correos = "; ".join(profile["correo"] for profile in data_perfil)
 
-    return [(correos, "Usuarios", mensaje)]
+    return [(correos, f"Usuarios_{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f')[:-3]}", mensaje)]
 
 def leer_encargados(
     path_encargados,

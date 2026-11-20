@@ -147,7 +147,7 @@ COPILOT_MAX_NAVEGACIONES = 5    # veces que se reintenta ir a Copilot si la pest
 #-----------Configuración del modulo onedrive---------------------------
 
 # True -> después de guardar el Excel se reinicia OneDrive para forzar que suba el cambio
-ONEDRIVE_FORZAR_SINCRONIZACION = True
+ONEDRIVE_FORZAR_SINCRONIZACION = False
 
 # Ruta a OneDrive.exe. None -> se busca sola en %LOCALAPPDATA%\Microsoft\OneDrive y Program Files
 ONEDRIVE_EXE = None
