@@ -76,6 +76,7 @@ COPILOT_SEL_CAJA_TEXTO = 'span[role="textbox"][contenteditable="true"]'
 COPILOT_SEL_BOTON_ENVIAR = 'button[aria-label="Enviar"]'
 COPILOT_SEL_BOTON_DETENER = 'button[aria-label*="Detener"], button[aria-label*="Stop"]'
 COPILOT_SEL_CHAT_TEMPORAL = '[aria-label="Chat temporal"]'
+COPILOT_SEL_RESPUESTA = '[data-testid="markdown-reply"]'   # burbuja de respuesta de Copilot
 
 # Carpeta donde se guardan HTML + pantallazo cuando algo falla
 COPILOT_CARPETA_DEBUG = RAIZ / "debug_copilot"

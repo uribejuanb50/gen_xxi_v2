@@ -208,12 +208,38 @@ def _extraer_respuestas(texto_pagina):
     return respuestas
 
 
-def _respuestas_en_pagina(driver):
+_JS_LEER_RESPUESTAS = """
+const nodos = Array.from(document.querySelectorAll(arguments[0]));
+return {
+    respuestas: nodos.map(n => n.textContent || ''),
+    cuerpo: document.body ? (document.body.textContent || '') : ''
+};
+"""
+
+
+def _leer_pagina(driver):
+    """
+    Devuelve (respuestas_validas, n_burbujas, largo_ultima).
+    Lee con textContent las burbujas de respuesta de Copilot (data-testid="markdown-reply").
+    Ojo: esas burbujas vienen con aria-hidden="true", por eso innerText no las traía.
+    Si no encuentra burbujas, busca en todo el documento como respaldo.
+    """
     try:
-        texto = driver.execute_script("return document.body ? document.body.innerText : ''") or ""
+        datos = driver.execute_script(_JS_LEER_RESPUESTAS, config.COPILOT_SEL_RESPUESTA) or {}
     except WebDriverException:
-        return []
-    return _extraer_respuestas(texto)
+        return [], 0, 0
+
+    burbujas = datos.get("respuestas") or []
+    respuestas = _extraer_respuestas("\n".join(burbujas))
+    if not respuestas and not burbujas:
+        respuestas = _extraer_respuestas(datos.get("cuerpo") or "")
+
+    largo_ultima = len(burbujas[-1]) if burbujas else 0
+    return respuestas, len(burbujas), largo_ultima
+
+
+def _respuestas_en_pagina(driver):
+    return _leer_pagina(driver)[0]
 
 
 # ----------------------------------------------------------------------------------
@@ -474,23 +500,44 @@ def recibir_mensaje(driver, respuestas_previas=0):
     Se da por terminada cuando aparece un bloque válido entre las marcas, Copilot dejó de
     generar y el contenido no cambia durante COPILOT_ESTABILIDAD_RESPUESTA segundos.
     """
-    limite = time.time() + config.COPILOT_TIMEOUT_RESPUESTA
+    inicio = time.time()
+    limite = inicio + config.COPILOT_TIMEOUT_RESPUESTA
+    estabilidad = config.COPILOT_ESTABILIDAD_RESPUESTA
     ultima = None
     desde = None
+    lectura = 0
 
     while time.time() < limite:
-        respuestas = _respuestas_en_pagina(driver)
+        lectura += 1
+        respuestas, n_burbujas, largo = _leer_pagina(driver)
+        generando = _hay_generacion_en_curso(driver)
+        prefijo = f"Lectura #{lectura} ({int(time.time() - inicio)} s):"
 
-        if len(respuestas) > respuestas_previas and not _hay_generacion_en_curso(driver):
+        if len(respuestas) > respuestas_previas:
             actual = respuestas[-1]
+            # Si el botón Detener sigue visible se exige más tiempo quieto (por si el botón no se oculta nunca)
+            requerido = estabilidad * 3 if generando else estabilidad
+
             if actual != ultima:
                 ultima, desde = actual, time.time()
-            elif time.time() - desde >= config.COPILOT_ESTABILIDAD_RESPUESTA:
-                correo, importancia = actual
-                _log(f"Respuesta recibida (importancia {importancia}, {len(correo)} caracteres)")
-                return correo, importancia
+                _log(f"{prefijo} respuesta válida detectada (importancia {actual[1]}), verificando que no cambie...")
+            else:
+                quieta = time.time() - desde
+                if quieta >= requerido:
+                    correo, importancia = actual
+                    _log(f"{prefijo} OK respuesta completa (importancia {importancia}, {len(correo)} caracteres)")
+                    return correo, importancia
+                _log(f"{prefijo} respuesta estable {int(quieta)}/{requerido} s"
+                     + (" (Copilot aún muestra Detener)" if generando else ""))
         else:
             ultima, desde = None, None
+            if n_burbujas == 0:
+                _log(f"{prefijo} esperando a que Copilot empiece a responder...")
+            elif generando:
+                _log(f"{prefijo} Copilot escribiendo... ({largo} caracteres)")
+            else:
+                _log(f"{prefijo} hay respuesta ({largo} caracteres) pero aún sin el bloque "
+                     f"{config.COPILOT_MARCA_INICIO} ... {config.COPILOT_MARCA_FIN} válido")
 
         time.sleep(config.COPILOT_INTERVALO_SONDEO)
 
