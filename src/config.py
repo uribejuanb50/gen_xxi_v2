@@ -1,3 +1,5 @@
+import src.local as local
+
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
@@ -7,11 +9,8 @@ DATA = RAIZ / "data"
 BD_VIKI = DATA / "Archivos de Jhon Jairo Martinez Gonzalez - DB_VIKI"
 
 ALERTAS = DATA / "Gerencia de Mejora continua de Procesos - data_alertas"
-EXCEL_ALERTAS = r"D:\OneDrive - Comunicacion Celular S.A.- Comcel S.A\JuanUribe\proyectos\GenXXI_V2(deprecated_no_tocar\data\Gerencia de Mejora continua de Procesos - data_alertas\Alertas_GenXXI.xlsx"
+EXCEL_ALERTAS = local.EXCEL_ALERTAS
 DATA_CONTACTO = ALERTAS / "data_contacto.json"
-
-# Carpeta donde se crea una copia nueva del Excel de alertas en cada ejecución
-EXCEL_CARPETA_COPIAS = Path(EXCEL_ALERTAS).parent / "exceles"
 
 
 #-----------Restricciones valores para el modulo correo---------------------------
@@ -31,7 +30,7 @@ CAMPOS_VALIDOS = [
 
 # Alterna el segundo campo de cada fila entre estos valores en cada escritura del Excel,
 # para que la tabla siempre cambie y se dispare la sincronización / el flujo
-CORREOS_ALTERNAR_CAMPO = False  # apagado: ahora el campo lleva fecha y hora (ver correos.generar_mensaje_por_importancia)
+CORREOS_ALTERNAR_CAMPO = True
 CORREOS_VALORES_ALTERNOS = ["Usuario 1", "Usuario 2"]
 
 IMPORTANCIAS_VALIDAS = [

@@ -10,7 +10,7 @@ def main():
 
     correo, importancia = copilot.llamar_copilot(prompt)
 
-    usuarios_objetivo = correos.leer_encargados(config.DATA_CONTACTO, "VIKI", ["PRACTICANTES", "PROFESIONALES"])
+    usuarios_objetivo = correos.leer_encargados(config.DATA_CONTACTO, "VIKI", ["PRACTICANTES"])
     filas = correos.generar_mensaje_por_importancia(usuarios_objetivo, "", correo)
     correos.crear_y_montar_correos(
         config.EXCEL_ALERTAS, "HojaAlertasCorreo", "TablaAlertas", filas
