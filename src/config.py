@@ -100,8 +100,14 @@ PROMPT_COPILOT = (
     "3. Redacta un correo formal en español, dirigido al equipo responsable, que explique la situación, "
     "los datos que la soportan y la acción sugerida. Sin asunto, solo el cuerpo, firmado como "
     "\"Sistema de Alertas GenXXI\".\n\n"
+    "Por favor coloca en el correo que el tema de responsabilidad es el sistema de viki, e inventate que un indicador NPS cayó puntos porcentuales entre 2 - 5"
     "Responde ÚNICAMENTE con lo siguiente, sin texto antes ni después y sin bloque de código:\n"
     f"{COPILOT_MARCA_INICIO}\n"
     '{"importancia": "<ALTA|MEDIA|BAJA>", "correo": "<cuerpo del correo, saltos de línea como \\n>"}\n'
     f"{COPILOT_MARCA_FIN}"
 )
+
+CONTEXTO_PRUEBA = "Este es un contexto de prueba, después se reemplazará con un contexto real " \
+"La idea es que el registro que te voy a pasar lo coloques directamente como respuesta" \
+"Es decir, dado a este contexto de prueba y el prompt inicial si te paso 'ALTA' tiene sque devolver en el formato de salida" \
+"'ALTA', lo mismo con 'MEDIA' y 'BAJA'"
