@@ -111,3 +111,11 @@ CONTEXTO_PRUEBA = "Este es un contexto de prueba, después se reemplazará con u
 "La idea es que el registro que te voy a pasar lo coloques directamente como respuesta" \
 "Es decir, dado a este contexto de prueba y el prompt inicial si te paso 'ALTA' tiene sque devolver en el formato de salida" \
 "'ALTA', lo mismo con 'MEDIA' y 'BAJA'"
+
+# Manejo de la página predeterminada que abre la política de Edge en cada pestaña
+COPILOT_DOMINIOS_COPILOT = ["copilot.cloud.microsoft", "m365.cloud.microsoft"]
+COPILOT_DOMINIOS_LOGIN = ["login.microsoftonline.com", "login.microsoft.com", "login.live.com",
+                          "device.login.microsoftonline.com"]
+COPILOT_SEG_URL_ESTABLE = 3     # la URL debe quedarse quieta este tiempo para dar por terminada una redirección
+COPILOT_SEG_CAJA_ESTABLE = 2    # la caja de texto debe seguir lista este tiempo antes de usarla
+COPILOT_MAX_NAVEGACIONES = 5    # veces que se reintenta ir a Copilot si la pestaña termina en otra página
