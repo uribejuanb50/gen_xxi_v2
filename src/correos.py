@@ -5,6 +5,7 @@ from openpyxl import load_workbook
 from openpyxl.utils import range_boundaries, get_column_letter
 
 import src.config as config
+import src.onedrive as onedrive
 
 
 def generar_mensaje_por_importancia( #entra una tanda de perfiles para mandar mensaje por importancia 
@@ -83,6 +84,7 @@ def extraer_y_montar_correos(
         try:
             wb.save(path_excel)
             print(f"[Correos] ({datetime.datetime.now().timestamp()}) Archivo {path_excel} actualizado")
+            onedrive.forzar_sincronizacion(path_excel)
             return
         
         except PermissionError:

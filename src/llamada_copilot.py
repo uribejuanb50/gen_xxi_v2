@@ -42,6 +42,7 @@ from selenium.common.exceptions import (
 )
 
 import src.config as config
+import src.plantilla_correo as plantilla_correo
 
 
 SEL_CAJA_TEXTO = (By.CSS_SELECTOR, config.COPILOT_SEL_CAJA_TEXTO)
@@ -174,10 +175,44 @@ def _volcar_debug(driver, etapa):
         _log(f"No se pudo guardar el debug: {e}")
 
 
+def _contenido_valido(datos):
+    """
+    Devuelve el contenido útil de la respuesta o None si no sirve:
+    - formato nuevo: dict con titulo/resumen/hallazgos/impacto/acciones (la forma la pone plantilla_correo)
+    - formato viejo: texto en "correo" (se usa tal cual)
+    """
+    if str(datos.get("titulo") or "").strip() and str(datos.get("resumen") or "").strip():
+        contenido = {
+            "titulo": str(datos.get("titulo")).strip(),
+            "resumen": str(datos.get("resumen")).strip(),
+            "impacto": str(datos.get("impacto") or "").strip(),
+        }
+        for campo in ("hallazgos", "acciones"):
+            valor = datos.get(campo) or []
+            if isinstance(valor, str):
+                valor = [valor]
+            contenido[campo] = tuple(str(v).strip() for v in valor if str(v).strip())
+        if "<texto>" in contenido["titulo"]:  # plantilla del propio prompt
+            return None
+        return contenido
+
+    correo = datos.get("correo")
+    if isinstance(correo, str) and correo.strip():
+        return correo.strip()
+    return None
+
+
+def _a_correo(contenido, importancia):
+    """Convierte el contenido de Copilot en el cuerpo final del correo (HTML con la plantilla)."""
+    if isinstance(contenido, dict):
+        return plantilla_correo.armar_correo_html(contenido, importancia)
+    return contenido
+
+
 def _extraer_respuestas(texto_pagina):
     """
     Busca en el texto de la página todos los bloques entre las marcas y devuelve
-    los que son JSON válido con importancia permitida: [(correo, importancia), ...].
+    los que son JSON válido con importancia permitida: [(contenido, importancia), ...].
     El bloque de ejemplo del propio prompt queda descartado porque su importancia
     es "<ALTA|MEDIA|BAJA>", que no es un valor válido.
     """
@@ -196,14 +231,14 @@ def _extraer_respuestas(texto_pagina):
             continue
 
         importancia = str(datos.get("importancia", "")).strip().upper()
-        correo = datos.get("correo", "")
-
         if importancia not in config.IMPORTANCIAS_VALIDAS:
             continue
-        if not isinstance(correo, str) or not correo.strip():
+
+        contenido = _contenido_valido(datos)
+        if contenido is None:
             continue
 
-        respuestas.append((correo.strip(), importancia))
+        respuestas.append((contenido, importancia))
 
     return respuestas
 
@@ -524,7 +559,8 @@ def recibir_mensaje(driver, respuestas_previas=0):
             else:
                 quieta = time.time() - desde
                 if quieta >= requerido:
-                    correo, importancia = actual
+                    contenido, importancia = actual
+                    correo = _a_correo(contenido, importancia)
                     _log(f"{prefijo} OK respuesta completa (importancia {importancia}, {len(correo)} caracteres)")
                     return correo, importancia
                 _log(f"{prefijo} respuesta estable {int(quieta)}/{requerido} s"

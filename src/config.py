@@ -86,25 +86,43 @@ COPILOT_MARCA_INICIO = "%%INICIO-RESPUESTA%%"
 COPILOT_MARCA_FIN = "%%FIN-RESPUESTA%%"
 
 # Prompt base. $CONTEXTO$ = registros históricos, $REGISTRO$ = registro a analizar.
-# Las marcas y el formato JSON del final NO se deben quitar: de ahí se sacan correo e importancia.
+# Copilot devuelve el CONTENIDO por partes en JSON; la FORMA (colores, negrillas, secciones)
+# la pone src/plantilla_correo.py. Las marcas y el formato del final NO se deben quitar.
 PROMPT_COPILOT = (
-    "Actúas como analista del sistema de monitoreo de KPIs de las IAs de Claro (proyecto GenXXI).\n\n"
+    "Actúas como analista senior del sistema de monitoreo de KPIs de las IAs de Claro (proyecto GenXXI). "
+    "Tu correo lo leen jefes y equipos técnicos con poco tiempo: debe entenderse en 10 segundos.\n\n"
     "CONTEXTO (registros históricos de referencia):\n"
     "$CONTEXTO$\n\n"
     "REGISTRO A ANALIZAR:\n"
     "$REGISTRO$\n\n"
-    "Instrucciones:\n"
-    "1. Compara el registro con el contexto teniendo en cuenta el día de la semana, la hora, "
-    "eventos o fechas especiales, tendencia de los últimos días y cualquier valor atípico.\n"
-    "2. Define el nivel de importancia: ALTA (caída o afectación grave que requiere acción inmediata), "
-    "MEDIA (comportamiento anormal que hay que revisar) o BAJA (variación menor o dentro de lo esperado).\n"
-    "3. Redacta un correo formal en español, dirigido al equipo responsable, que explique la situación, "
-    "los datos que la soportan y la acción sugerida. Sin asunto, solo el cuerpo, firmado como "
-    "\"Sistema de Alertas GenXXI\".\n\n"
-    "Por favor coloca en el correo que el tema de responsabilidad es el sistema de viki, e inventate que un indicador NPS cayó puntos porcentuales entre 2 - 5"
-    "Responde ÚNICAMENTE con lo siguiente, sin texto antes ni después y sin bloque de código:\n"
+    "PASO 1 - ANÁLISIS\n"
+    "Compara el registro con el contexto teniendo en cuenta el día de la semana, la hora, eventos o fechas "
+    "especiales, la tendencia de los últimos días y cualquier valor atípico.\n\n"
+    "PASO 2 - IMPORTANCIA\n"
+    "ALTA: caída o afectación grave que requiere acción inmediata. "
+    "MEDIA: comportamiento anormal que hay que revisar. "
+    "BAJA: variación menor o dentro de lo esperado.\n\n"
+    "PASO 3 - CONTENIDO DEL CORREO\n"
+    "- titulo: máximo 12 palabras. Di qué pasó, en qué sistema y cuánto. "
+    "Ejemplo de estilo: 'VIKI: el NPS cayó 4 pp frente a su tendencia'.\n"
+    "- resumen: 2 frases como máximo. Lo más importante primero: qué pasó, magnitud y qué tan urgente es.\n"
+    "- hallazgos: de 2 a 4 viñetas cortas, cada una con un dato concreto "
+    "(valor actual vs. referencia, variación, día o evento relacionado).\n"
+    "- impacto: 1 o 2 frases sobre qué significa para el negocio o los clientes si no se atiende.\n"
+    "- acciones: de 2 a 4 acciones concretas que empiecen con verbo en infinitivo (Revisar, Validar, Escalar...).\n\n"
+    "REGLAS DE ESCRITURA\n"
+    "- Español formal pero directo. Frases cortas. Nada de relleno ni frases genéricas "
+    "('se recomienda realizar un análisis', 'podría estar impactando').\n"
+    "- Marca en negrilla con **doble asterisco** solo las cifras y conclusiones clave: máximo 2 por campo.\n"
+    "- No incluyas saludo ni firma: el sistema los agrega.\n"
+    "- Usa solo datos del contexto, del registro o de estas instrucciones; no inventes cifras.\n"
+    "- Dentro de los textos no uses comillas dobles; si necesitas citar algo usa comillas simples.\n\n"
+    "Por favor coloca en el correo que el tema de responsabilidad es el sistema de viki, e inventate que un indicador NPS cayó puntos porcentuales entre 2 - 5\n\n"
+    "FORMATO DE RESPUESTA\n"
+    "Responde ÚNICAMENTE con un bloque de código que contenga exactamente esto, sin texto antes ni después:\n"
     f"{COPILOT_MARCA_INICIO}\n"
-    '{"importancia": "<ALTA|MEDIA|BAJA>", "correo": "<cuerpo del correo, saltos de línea como \\n>"}\n'
+    '{"importancia": "<ALTA|MEDIA|BAJA>", "titulo": "<texto>", "resumen": "<texto>", '
+    '"hallazgos": ["<texto>", "<texto>"], "impacto": "<texto>", "acciones": ["<texto>", "<texto>"]}\n'
     f"{COPILOT_MARCA_FIN}"
 )
 
@@ -120,3 +138,26 @@ COPILOT_DOMINIOS_LOGIN = ["login.microsoftonline.com", "login.microsoft.com", "l
 COPILOT_SEG_URL_ESTABLE = 3     # la URL debe quedarse quieta este tiempo para dar por terminada una redirección
 COPILOT_SEG_CAJA_ESTABLE = 2    # la caja de texto debe seguir lista este tiempo antes de usarla
 COPILOT_MAX_NAVEGACIONES = 5    # veces que se reintenta ir a Copilot si la pestaña termina en otra página
+
+#-----------Configuración del modulo onedrive---------------------------
+
+# True -> después de guardar el Excel se reinicia OneDrive para forzar que suba el cambio
+ONEDRIVE_FORZAR_SINCRONIZACION = True
+
+# Ruta a OneDrive.exe. None -> se busca sola en %LOCALAPPDATA%\Microsoft\OneDrive y Program Files
+ONEDRIVE_EXE = None
+
+ONEDRIVE_ESPERA_ANTES = 3   # segundos tras guardar antes de reiniciar OneDrive
+ONEDRIVE_TIMEOUT = 60       # máximo esperando a que el archivo se libere / OneDrive cierre o arranque
+
+#-----------Diseño del correo (modulo plantilla_correo)---------------------------
+
+# Color de la franja y la etiqueta según importancia (ALTA usa el rojo corporativo)
+CORREO_COLORES_IMPORTANCIA = {
+    "ALTA": "#FF1221",
+    "MEDIA": "#F59E0B",
+    "BAJA": "#16A34A",
+}
+CORREO_SALUDO = "Hola equipo,"
+CORREO_FIRMA = "Sistema de Alertas GenXXI"
+CORREO_PIE = "Gerencia de Mejora Continua de Procesos · Correo generado automáticamente a partir del monitoreo de KPIs. No responder a este mensaje."
