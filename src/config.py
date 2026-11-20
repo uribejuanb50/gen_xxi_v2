@@ -26,6 +26,11 @@ CAMPOS_VALIDOS = [
     "nombre", "correo"
 ]
 
+# Alterna el segundo campo de cada fila entre estos valores en cada escritura del Excel,
+# para que la tabla siempre cambie y se dispare la sincronización / el flujo
+CORREOS_ALTERNAR_CAMPO = True
+CORREOS_VALORES_ALTERNOS = ["Usuario 1", "Usuario 2"]
+
 IMPORTANCIAS_VALIDAS = [
     "ALTA", "MEDIA", "BAJA"
 ]

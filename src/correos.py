@@ -54,6 +54,17 @@ def leer_encargados(
 
     pass
 
+def alternar_valor(valor_anterior):
+    """
+    Devuelve el siguiente valor de config.CORREOS_VALORES_ALTERNOS respecto al que había
+    (Usuario 1 -> Usuario 2 -> Usuario 1 ...). Sirve para que la tabla siempre cambie
+    y OneDrive / Power Automate detecten la modificación aunque el resto sea igual.
+    """
+    valores = config.CORREOS_VALORES_ALTERNOS
+    if valor_anterior in valores:
+        return valores[(valores.index(valor_anterior) + 1) % len(valores)]
+    return valores[0]
+
 def extraer_y_montar_correos(
     path_excel, hoja, nombre_tabla, filas, reintentos = 5
 ):
@@ -61,6 +72,13 @@ def extraer_y_montar_correos(
     ws = wb[hoja]
     tbl = ws.tables[nombre_tabla]
     min_col, min_row, max_col, max_row = range_boundaries(tbl.ref)
+
+    #alternar el segundo campo para que el contenido de la tabla siempre cambie
+    if config.CORREOS_ALTERNAR_CAMPO and filas:
+        anterior = ws.cell(min_row + 1, min_col + 1).value
+        nuevo = alternar_valor(anterior)
+        filas = [(fila[0], nuevo, *fila[2:]) for fila in filas]
+        print(f"[Correos] ({datetime.datetime.now().timestamp()}) Segundo campo: {anterior!r} -> {nuevo!r}")
 
     #borramos los registros ya hechos
     for r in range(min_row + 1, max_row + 1):
