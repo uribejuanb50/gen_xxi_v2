@@ -12,7 +12,7 @@ def main():
 
     usuarios_objetivo = correos.leer_encargados(config.DATA_CONTACTO, "VIKI", ["PRACTICANTES", "PROFESIONALES"])
     filas = correos.generar_mensaje_por_importancia(usuarios_objetivo, "", correo)
-    correos.extraer_y_montar_correos(
+    correos.crear_y_montar_correos(
         config.EXCEL_ALERTAS, "HojaAlertasCorreo", "TablaAlertas", filas
     )
 

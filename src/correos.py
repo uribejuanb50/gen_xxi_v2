@@ -1,4 +1,6 @@
 import json
+import shutil
+from pathlib import Path
 import time
 import datetime
 from openpyxl import load_workbook
@@ -17,7 +19,7 @@ def generar_mensaje_por_importancia( #entra una tanda de perfiles para mandar me
 
     correos = "; ".join(profile["correo"] for profile in data_perfil)
 
-    return [(correos, "Usuarios", mensaje)]
+    return [(correos, f"Usuarios-{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f')[:-3]}", mensaje)]
 
 def leer_encargados(
     path_encargados,
@@ -112,3 +114,30 @@ def extraer_y_montar_correos(
     raise RuntimeError("No se pudo guardar")
 
     pass
+
+def crear_copia_excel(path_excel_base, carpeta_destino=None):
+    """
+    Copia el Excel base (con su hoja y su tabla tal cual) a la carpeta de copias,
+    con nombre único por ejecución: Alertas_GenXXI_aaaa-mm-dd-hh-mm-ss-mmm.xlsx
+    El archivo base no se modifica.
+    """
+    base = Path(path_excel_base)
+    carpeta = Path(carpeta_destino) if carpeta_destino else config.EXCEL_CARPETA_COPIAS
+    carpeta.mkdir(parents=True, exist_ok=True)
+
+    sello = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")[:-3]
+    destino = carpeta / f"{base.stem}_{sello}{base.suffix}"
+
+    shutil.copyfile(base, destino)  # copia completa del archivo: la tabla viaja dentro
+    print(f"[Correos] ({datetime.datetime.now().timestamp()}) Copia creada: {destino}")
+    return destino
+
+
+def crear_y_montar_correos(
+    path_excel_base, hoja, nombre_tabla, filas, carpeta_destino=None
+):
+    """Crea una copia nueva del Excel en la carpeta de copias y escribe las filas en ella."""
+    destino = crear_copia_excel(path_excel_base, carpeta_destino)
+    extraer_y_montar_correos(destino, hoja, nombre_tabla, filas)
+    return destino
+
