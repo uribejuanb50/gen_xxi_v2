@@ -31,7 +31,7 @@ IMPORTANCIAS_VALIDAS = [
 ]
 
 MENSAJE_TEMPORAL = "" \
-"Muy buenas tardes a todos los taggeados en este correo tin\n\n" \
+"Muy buenas tardes a todos los taggeados en este correo tin tan tun ya lo sabe\n\n" \
 "" \
 "Este correo es de importancia alta ya que según los indicadores de la IA de VIKI, esta misma se ha caído\n" \
 "Agradecemos la pronta respuesta, \n\n" \
