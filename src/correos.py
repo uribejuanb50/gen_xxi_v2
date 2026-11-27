@@ -116,6 +116,40 @@ def alternar_valor(valor_anterior):
         return valores[(valores.index(valor_anterior) + 1) % len(valores)]
     return valores[0]
 
+def normalizar_filas(filas, n_columnas=None):
+    """
+    Garantiza que filas sea una lista de tuplas, una por fila de la tabla.
+    Si llega un texto suelto o una fila sin envolver en lista, openpyxl recorre el texto
+    letra por letra y escribe un carácter por columna (el error '3 | 8 | 5 | 1 | 9...').
+    - una sola fila sin lista, ej. ("correo", "Usuario", "<html>")  -> se envuelve en [ ]
+    - un texto, un número o una fila que no es tupla/lista           -> error, no se escribe nada
+    - una fila con distinto número de valores que columnas de la tabla -> error, no se escribe nada
+    """
+    if isinstance(filas, (str, bytes)) or filas is None:
+        raise TypeError(f"'filas' debe ser una lista de tuplas y llegó {type(filas).__name__}: {str(filas)[:60]!r}")
+
+    if isinstance(filas, tuple) and filas and all(isinstance(v, (str, int, float)) or v is None for v in filas):
+        filas = [filas]  # pasaron una sola fila sin la lista
+
+    filas = list(filas)
+    for i, fila in enumerate(filas, start=1):
+        if isinstance(fila, (str, bytes)) or not isinstance(fila, (list, tuple)):
+            raise TypeError(
+                f"La fila {i} debe ser una tupla (correos, usuario, cuerpo) y llegó "
+                f"{type(fila).__name__}: {str(fila)[:60]!r}"
+            )
+        if n_columnas is not None and len(fila) != n_columnas:
+            raise ValueError(f"La fila {i} trae {len(fila)} valores y la tabla tiene {n_columnas} columnas")
+    return [tuple(f) for f in filas]
+
+
+def columnas_tabla(path_excel, hoja, nombre_tabla):
+    """Número de columnas de la tabla del Excel (para validar las filas antes de tocar nada)."""
+    wb = load_workbook(path_excel)
+    min_col, _, max_col, _ = range_boundaries(wb[hoja].tables[nombre_tabla].ref)
+    return max_col - min_col + 1
+
+
 def extraer_y_montar_correos(
     path_excel, hoja, nombre_tabla, filas, reintentos = 5
 ):
@@ -123,6 +157,7 @@ def extraer_y_montar_correos(
     ws = wb[hoja]
     tbl = ws.tables[nombre_tabla]
     min_col, min_row, max_col, max_row = range_boundaries(tbl.ref)
+    filas = normalizar_filas(filas, max_col - min_col + 1)
 
     #alternar el segundo campo para que el contenido de la tabla siempre cambie
     if config.CORREOS_ALTERNAR_CAMPO and filas:
@@ -185,10 +220,22 @@ def crear_copia_excel(path_excel_base, carpeta_destino=None):
 def crear_y_montar_correos(
     path_excel_base, hoja, nombre_tabla, filas, carpeta_destino=None
 ):
-    """Crea una copia nueva del Excel en la carpeta de copias y escribe las filas en ella."""
+    """
+    Crea una copia nueva del Excel en la carpeta de copias y escribe las filas en ella.
+    Las filas se validan ANTES de crear la copia; y si la escritura falla, la copia se borra
+    para que OneDrive no suba un archivo a medias que dispare el flujo.
+    """
+    filas = normalizar_filas(filas, columnas_tabla(path_excel_base, hoja, nombre_tabla))
+
     destino = crear_copia_excel(path_excel_base, carpeta_destino)
+    try:
+        extraer_y_montar_correos(destino, hoja, nombre_tabla, filas)
+    except Exception:
+        Path(destino).unlink(missing_ok=True)
+        _log(f"Falló la escritura, se borró la copia {destino} para que no se sincronice")
+        raise
+
     for i, fila in enumerate(filas, start=1):
-        guardar_vista_previa(fila[2], f"{destino.stem}_fila{i}")
-    extraer_y_montar_correos(destino, hoja, nombre_tabla, filas)
+        guardar_vista_previa(fila[-1], f"{destino.stem}_fila{i}")
     return destino
 
