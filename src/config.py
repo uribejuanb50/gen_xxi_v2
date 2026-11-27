@@ -12,6 +12,8 @@ ALERTAS = DATA / "Gerencia de Mejora continua de Procesos - data_alertas"
 EXCEL_ALERTAS = local.EXCEL_ALERTAS
 DATA_CONTACTO = ALERTAS / "data_contacto.json"
 
+EXCEL_CARPETA_COPIAS = Path(EXCEL_ALERTAS).parent / ""
+
 
 #-----------Restricciones valores para el modulo correo---------------------------
 
