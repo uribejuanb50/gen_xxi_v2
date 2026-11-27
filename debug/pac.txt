@@ -1,0 +1,393 @@
+trigger->
+Input
+{
+    "headers": {
+        "Cache-Control": "max-age=0, private",
+        "Transfer-Encoding": "chunked",
+        "Location": "https://flow-apim-msmanaged-na-northcentralus-01.azure-apim.net/apim/sharepointonline/526b7e65a0144e3ba1eb0fe148b97ae6/datasets/https%253A%252F%252Fclaromovilco.sharepoint.com%252Fsites%252FGerenciadeProcesos/tables/71725161-97f9-4736-9010-0c4fa63958d5/onupdatedfileitems?folderPath=%2fTemas+del+rea%2fAUTOMATIZACIONES+LOW+CODE%2fJuan_Bernardo_Uribe_(Fercho)%2fGen_XXI(no+borrar+o+se+acaba+la+empresa)%2fdata_alertas&triggerstatecl=MTszOzcxNzI1MTYxLTk3ZjktNDczNi05MDEwLTBjNGZhNjM5NThkNTs2MzkzMTM5ODMwMTM4MDAwMDA7Nzk3MTgzNTQ5",
+        "Retry-After": "21600",
+        "Vary": "Origin,Accept-Encoding",
+        "X-NetworkStatistics": "0,65535,0,0,354718,90311,90311,77004",
+        "X-SharePointHealthScore": "3",
+        "X-MS-SPConnector": "1",
+        "X-SP-SERVERSTATE": "ReadOnly=0",
+        "DATASERVICEVERSION": "3.0",
+        "SPClientServiceRequestDuration": "302",
+        "IsOCDI": "0",
+        "X-DataBoundary": "NONE",
+        "X-1DSCollectorUrl": "https://mobile.events.data.microsoft.com/OneCollector/1.0/",
+        "X-AriaCollectorURL": "https://browser.pipe.aria.microsoft.com/Collector/3.0/",
+        "SPRequestGuid": "28889e5d-dc84-4cbb-a719-35dc424f15ea",
+        "request-id": "28889e5d-dc84-4cbb-a719-35dc424f15ea",
+        "MS-CV": "olMEkmbQAICaYsSf/yhUKA.0",
+        "SPLogId": "920453a2-d066-8000-9a62-c49fff285428",
+        "X-SP-RouteResult": "correct",
+        "Strict-Transport-Security": "max-age=31536000",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Content-Security-Policy": "frame-ancestors 'self' teams.microsoft.com *.teams.microsoft.com *.skype.com *.teams.microsoft.us local.teams.office.com teams.cloud.microsoft *.office365.com goals.cloud.microsoft *.powerapps.com *.powerbi.com *.yammer.com engage.cloud.microsoft word.cloud.microsoft excel.cloud.microsoft powerpoint.cloud.microsoft *.officeapps.live.com *.office.com *.microsoft365.com m365.cloud.microsoft *.cloud.microsoft *.stream.azure-test.net *.dynamics.com *.microsoft.com onedrive.live.com *.onedrive.live.com teams.microsoft.com *.teams.microsoft.com securebroker.sharepointonline.com;",
+        "MicrosoftSharePointTeamServices": "16.0.0.27911",
+        "X-Content-Type-Options": "nosniff",
+        "X-MS-InvokeApp": "1; RequireReadOnly",
+        "P3P": "CP=\"ALL IND DSP COR ADM CONo CUR CUSo IVAo IVDo PSA PSD TAI TELo OUR SAMo CNT COM INT NAV ONL PHY PRE PUR UNI\"",
+        "X-AspNet-Version": "4.0.30319",
+        "X-Powered-By": "ASP.NET",
+        "x-ms-environment-id": "default-46bb22b8-4c2c-40ff-8360-7b6334821279",
+        "x-ms-tenant-id": "46bb22b8-4c2c-40ff-8360-7b6334821279",
+        "x-ms-subscription-id": "Default-46bb22b8-4c2c-40ff-8360-7b6334821279",
+        "x-ms-dlp-re": "-|-|-",
+        "x-ms-dlp-gu": "-|-",
+        "x-ms-dlp-ef": "-|-/-|-|-|-|-",
+        "x-ms-atg-re": "-|-|-",
+        "x-ms-mip-sl": "-|-|-|-",
+        "x-ms-au-creator-id": "3f02857f-6ba3-4c2e-ae68-2f7e332bb778",
+        "x-ms-plex-worker-metadata": "sharepointonline/bucket:4",
+        "Timing-Allow-Origin": "*",
+        "x-ms-apihub-cached-response": "false",
+        "x-ms-apihub-obo": "false",
+        "Date": "Fri, 27 Nov 2026 17:45:01 GMT",
+        "Content-Type": "application/json; charset=utf-8",
+        "Expires": "Thu, 12 Nov 2026 17:45:01 GMT",
+        "Last-Modified": "Fri, 27 Nov 2026 17:45:01 GMT",
+        "Content-Length": "22139"
+    },
+    "body": {
+        "@odata.etag": "\"1\"",
+        "ItemInternalId": "33253",
+        "ID": 33253,
+        "Editor": {
+            "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedUser",
+            "Claims": "i:0#.f|membership|38519950@claro.com.co",
+            "DisplayName": "Juan Bernardo Uribe Ramirez",
+            "Email": "juan.uriber@claro.com.co",
+            "Picture": "https://claromovilco.sharepoint.com/sites/GerenciadeProcesos/_layouts/15/UserPhoto.aspx?Size=L&AccountName=juan.uriber@claro.com.co",
+            "Department": "Gerencia Mejora Continua Procesos Corporativos",
+            "JobTitle": "Practicante Generacion XXI"
+        },
+        "Editor#Claims": "i:0#.f|membership|38519950@claro.com.co",
+        "Modified": "2026-11-27T17:44:28Z",
+        "SharedWithUsers": [],
+        "SharedWithUsers@odata.type": "#Collection(Microsoft.Azure.Connectors.SharePoint.SPListExpandedUser)",
+        "SharedWithUsers#Claims": [],
+        "SharedWithUsers#Claims@odata.type": "#Collection(String)",
+        "MediaServiceImageTags": [],
+        "MediaServiceImageTags@odata.type": "#Collection(Microsoft.Azure.Connectors.SharePoint.SPListExpandedTaxonomy)",
+        "MediaServiceImageTags#WssId": [],
+        "MediaServiceImageTags#WssId@odata.type": "#Collection(Int64)",
+        "Created": "2026-11-27T17:44:30Z",
+        "Author": {
+            "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedUser",
+            "Claims": "i:0#.f|membership|38519950@claro.com.co",
+            "DisplayName": "Juan Bernardo Uribe Ramirez",
+            "Email": "juan.uriber@claro.com.co",
+            "Picture": "https://claromovilco.sharepoint.com/sites/GerenciadeProcesos/_layouts/15/UserPhoto.aspx?Size=L&AccountName=juan.uriber@claro.com.co",
+            "Department": "Gerencia Mejora Continua Procesos Corporativos",
+            "JobTitle": "Practicante Generacion XXI"
+        },
+        "Author#Claims": "i:0#.f|membership|38519950@claro.com.co",
+        "OData__DisplayName": "",
+        "{Identifier}": "Temas%2bdel%2brea%252fAUTOMATIZACIONES%2bLOW%2bCODE%252fJuan_Bernardo_Uribe_(Fercho)%252fGen_XXI(no%2bborrar%2bo%2bse%2bacaba%2bla%2bempresa)%252fdata_alertas%252fAlertas_GenXXI_2026-11-27-12-44-28-404.xlsx",
+        "{IsFolder}": false,
+        "{Thumbnail}": {
+            "Full": null,
+            "Large": "data:image/jpeg;base64,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",
+            "Medium": "data:image/jpeg;base64,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",
+            "Small": "data:image/jpeg;base64,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"
+        },
+        "{Link}": "https://claromovilco.sharepoint.com/sites/GerenciadeProcesos/Temas%20del%20rea/AUTOMATIZACIONES%20LOW%20CODE/Juan_Bernardo_Uribe_(Fercho)/Gen_XXI(no%20borrar%20o%20se%20acaba%20la%20empresa)/data_alertas/Alertas_GenXXI_2026-11-27-12-44-28-404.xlsx?d=wa3fbed80f8764beb91e093fc77adfa3e",
+        "{Name}": "Alertas_GenXXI_2026-11-27-12-44-28-404",
+        "{FilenameWithExtension}": "Alertas_GenXXI_2026-11-27-12-44-28-404.xlsx",
+        "{Path}": "Temas del rea/AUTOMATIZACIONES LOW CODE/Juan_Bernardo_Uribe_(Fercho)/Gen_XXI(no borrar o se acaba la empresa)/data_alertas/",
+        "{FullPath}": "Temas del rea/AUTOMATIZACIONES LOW CODE/Juan_Bernardo_Uribe_(Fercho)/Gen_XXI(no borrar o se acaba la empresa)/data_alertas/Alertas_GenXXI_2026-11-27-12-44-28-404.xlsx",
+        "{ContentType}": {
+            "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedContentType",
+            "Id": "0x01010037367ADC0EE59D4296BA44BA8F83762D",
+            "Name": "Document"
+        },
+        "{ContentType}#Id": "0x01010037367ADC0EE59D4296BA44BA8F83762D",
+        "{IsCheckedOut}": false,
+        "{DriveId}": "b!i6NU1ESel0miIa9vYlRNp3g0hnihozxIkX-GPYpN859hUXJx-Zc2R5AQDE-mOVjV",
+        "{DriveItemId}": "01XVCWF7UA5X52G5XY5NFZDYET7R3236R6",
+        "{VersionNumber}": "1.0",
+        "{TriggerWindowStartToken}": "MTszOzcxNzI1MTYxLTk3ZjktNDczNi05MDEwLTBjNGZhNjM5NThkNTs2MzkzMTM5ODAzNTgzMDAwMDA7Nzk3MTgyODM5",
+        "{TriggerWindowEndToken}": "MTszOzcxNzI1MTYxLTk3ZjktNDczNi05MDEwLTBjNGZhNjM5NThkNTs2MzkzMTM5ODMwMTM4MDAwMDA7Nzk3MTgzNTQ5"
+    }
+}
+Output:
+{
+    "headers": {
+        "Cache-Control": "max-age=0, private",
+        "Transfer-Encoding": "chunked",
+        "Location": "https://flow-apim-msmanaged-na-northcentralus-01.azure-apim.net/apim/sharepointonline/526b7e65a0144e3ba1eb0fe148b97ae6/datasets/https%253A%252F%252Fclaromovilco.sharepoint.com%252Fsites%252FGerenciadeProcesos/tables/71725161-97f9-4736-9010-0c4fa63958d5/onupdatedfileitems?folderPath=%2fTemas+del+rea%2fAUTOMATIZACIONES+LOW+CODE%2fJuan_Bernardo_Uribe_(Fercho)%2fGen_XXI(no+borrar+o+se+acaba+la+empresa)%2fdata_alertas&triggerstatecl=MTszOzcxNzI1MTYxLTk3ZjktNDczNi05MDEwLTBjNGZhNjM5NThkNTs2MzkzMTM5ODMwMTM4MDAwMDA7Nzk3MTgzNTQ5",
+        "Retry-After": "21600",
+        "Vary": "Origin,Accept-Encoding",
+        "X-NetworkStatistics": "0,65535,0,0,354718,90311,90311,77004",
+        "X-SharePointHealthScore": "3",
+        "X-MS-SPConnector": "1",
+        "X-SP-SERVERSTATE": "ReadOnly=0",
+        "DATASERVICEVERSION": "3.0",
+        "SPClientServiceRequestDuration": "302",
+        "IsOCDI": "0",
+        "X-DataBoundary": "NONE",
+        "X-1DSCollectorUrl": "https://mobile.events.data.microsoft.com/OneCollector/1.0/",
+        "X-AriaCollectorURL": "https://browser.pipe.aria.microsoft.com/Collector/3.0/",
+        "SPRequestGuid": "28889e5d-dc84-4cbb-a719-35dc424f15ea",
+        "request-id": "28889e5d-dc84-4cbb-a719-35dc424f15ea",
+        "MS-CV": "olMEkmbQAICaYsSf/yhUKA.0",
+        "SPLogId": "920453a2-d066-8000-9a62-c49fff285428",
+        "X-SP-RouteResult": "correct",
+        "Strict-Transport-Security": "max-age=31536000",
+        "X-Frame-Options": "SAMEORIGIN",
+        "Content-Security-Policy": "frame-ancestors 'self' teams.microsoft.com *.teams.microsoft.com *.skype.com *.teams.microsoft.us local.teams.office.com teams.cloud.microsoft *.office365.com goals.cloud.microsoft *.powerapps.com *.powerbi.com *.yammer.com engage.cloud.microsoft word.cloud.microsoft excel.cloud.microsoft powerpoint.cloud.microsoft *.officeapps.live.com *.office.com *.microsoft365.com m365.cloud.microsoft *.cloud.microsoft *.stream.azure-test.net *.dynamics.com *.microsoft.com onedrive.live.com *.onedrive.live.com teams.microsoft.com *.teams.microsoft.com securebroker.sharepointonline.com;",
+        "MicrosoftSharePointTeamServices": "16.0.0.27911",
+        "X-Content-Type-Options": "nosniff",
+        "X-MS-InvokeApp": "1; RequireReadOnly",
+        "P3P": "CP=\"ALL IND DSP COR ADM CONo CUR CUSo IVAo IVDo PSA PSD TAI TELo OUR SAMo CNT COM INT NAV ONL PHY PRE PUR UNI\"",
+        "X-AspNet-Version": "4.0.30319",
+        "X-Powered-By": "ASP.NET",
+        "x-ms-environment-id": "default-46bb22b8-4c2c-40ff-8360-7b6334821279",
+        "x-ms-tenant-id": "46bb22b8-4c2c-40ff-8360-7b6334821279",
+        "x-ms-subscription-id": "Default-46bb22b8-4c2c-40ff-8360-7b6334821279",
+        "x-ms-dlp-re": "-|-|-",
+        "x-ms-dlp-gu": "-|-",
+        "x-ms-dlp-ef": "-|-/-|-|-|-|-",
+        "x-ms-atg-re": "-|-|-",
+        "x-ms-mip-sl": "-|-|-|-",
+        "x-ms-au-creator-id": "3f02857f-6ba3-4c2e-ae68-2f7e332bb778",
+        "x-ms-plex-worker-metadata": "sharepointonline/bucket:4",
+        "Timing-Allow-Origin": "*",
+        "x-ms-apihub-cached-response": "false",
+        "x-ms-apihub-obo": "false",
+        "Date": "Fri, 27 Nov 2026 17:45:01 GMT",
+        "Content-Type": "application/json; charset=utf-8",
+        "Expires": "Thu, 12 Nov 2026 17:45:01 GMT",
+        "Last-Modified": "Fri, 27 Nov 2026 17:45:01 GMT",
+        "Content-Length": "22139"
+    },
+    "body": {
+        "@odata.etag": "\"1\"",
+        "ItemInternalId": "33253",
+        "ID": 33253,
+        "Editor": {
+            "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedUser",
+            "Claims": "i:0#.f|membership|38519950@claro.com.co",
+            "DisplayName": "Juan Bernardo Uribe Ramirez",
+            "Email": "juan.uriber@claro.com.co",
+            "Picture": "https://claromovilco.sharepoint.com/sites/GerenciadeProcesos/_layouts/15/UserPhoto.aspx?Size=L&AccountName=juan.uriber@claro.com.co",
+            "Department": "Gerencia Mejora Continua Procesos Corporativos",
+            "JobTitle": "Practicante Generacion XXI"
+        },
+        "Editor#Claims": "i:0#.f|membership|38519950@claro.com.co",
+        "Modified": "2026-11-27T17:44:28Z",
+        "SharedWithUsers": [],
+        "SharedWithUsers@odata.type": "#Collection(Microsoft.Azure.Connectors.SharePoint.SPListExpandedUser)",
+        "SharedWithUsers#Claims": [],
+        "SharedWithUsers#Claims@odata.type": "#Collection(String)",
+        "MediaServiceImageTags": [],
+        "MediaServiceImageTags@odata.type": "#Collection(Microsoft.Azure.Connectors.SharePoint.SPListExpandedTaxonomy)",
+        "MediaServiceImageTags#WssId": [],
+        "MediaServiceImageTags#WssId@odata.type": "#Collection(Int64)",
+        "Created": "2026-11-27T17:44:30Z",
+        "Author": {
+            "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedUser",
+            "Claims": "i:0#.f|membership|38519950@claro.com.co",
+            "DisplayName": "Juan Bernardo Uribe Ramirez",
+            "Email": "juan.uriber@claro.com.co",
+            "Picture": "https://claromovilco.sharepoint.com/sites/GerenciadeProcesos/_layouts/15/UserPhoto.aspx?Size=L&AccountName=juan.uriber@claro.com.co",
+            "Department": "Gerencia Mejora Continua Procesos Corporativos",
+            "JobTitle": "Practicante Generacion XXI"
+        },
+        "Author#Claims": "i:0#.f|membership|38519950@claro.com.co",
+        "OData__DisplayName": "",
+        "{Identifier}": "Temas%2bdel%2brea%252fAUTOMATIZACIONES%2bLOW%2bCODE%252fJuan_Bernardo_Uribe_(Fercho)%252fGen_XXI(no%2bborrar%2bo%2bse%2bacaba%2bla%2bempresa)%252fdata_alertas%252fAlertas_GenXXI_2026-11-27-12-44-28-404.xlsx",
+        "{IsFolder}": false,
+        "{Thumbnail}": {
+            "Full": null,
+            "Large": "data:image/jpeg;base64,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",
+            "Medium": "data:image/jpeg;base64,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",
+            "Small": "data:image/jpeg;base64,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"
+        },
+        "{Link}": "https://claromovilco.sharepoint.com/sites/GerenciadeProcesos/Temas%20del%20rea/AUTOMATIZACIONES%20LOW%20CODE/Juan_Bernardo_Uribe_(Fercho)/Gen_XXI(no%20borrar%20o%20se%20acaba%20la%20empresa)/data_alertas/Alertas_GenXXI_2026-11-27-12-44-28-404.xlsx?d=wa3fbed80f8764beb91e093fc77adfa3e",
+        "{Name}": "Alertas_GenXXI_2026-11-27-12-44-28-404",
+        "{FilenameWithExtension}": "Alertas_GenXXI_2026-11-27-12-44-28-404.xlsx",
+        "{Path}": "Temas del rea/AUTOMATIZACIONES LOW CODE/Juan_Bernardo_Uribe_(Fercho)/Gen_XXI(no borrar o se acaba la empresa)/data_alertas/",
+        "{FullPath}": "Temas del rea/AUTOMATIZACIONES LOW CODE/Juan_Bernardo_Uribe_(Fercho)/Gen_XXI(no borrar o se acaba la empresa)/data_alertas/Alertas_GenXXI_2026-11-27-12-44-28-404.xlsx",
+        "{ContentType}": {
+            "@odata.type": "#Microsoft.Azure.Connectors.SharePoint.SPListExpandedContentType",
+            "Id": "0x01010037367ADC0EE59D4296BA44BA8F83762D",
+            "Name": "Document"
+        },
+        "{ContentType}#Id": "0x01010037367ADC0EE59D4296BA44BA8F83762D",
+        "{IsCheckedOut}": false,
+        "{DriveId}": "b!i6NU1ESel0miIa9vYlRNp3g0hnihozxIkX-GPYpN859hUXJx-Zc2R5AQDE-mOVjV",
+        "{DriveItemId}": "01XVCWF7UA5X52G5XY5NFZDYET7R3236R6",
+        "{VersionNumber}": "1.0",
+        "{TriggerWindowStartToken}": "MTszOzcxNzI1MTYxLTk3ZjktNDczNi05MDEwLTBjNGZhNjM5NThkNTs2MzkzMTM5ODAzNTgzMDAwMDA7Nzk3MTgyODM5",
+        "{TriggerWindowEndToken}": "MTszOzcxNzI1MTYxLTk3ZjktNDczNi05MDEwLTBjNGZhNjM5NThkNTs2MzkzMTM5ODMwMTM4MDAwMDA7Nzk3MTgzNTQ5"
+    }
+}
+Delay:
+{
+    "interval": {
+        "unit": "Second",
+        "count": 20
+    }
+}
+
+List tables->
+Input:
+{
+    "host": {
+        "connectionReferenceName": "shared_excelonlinebusiness",
+        "operationId": "GetItems"
+    },
+    "parameters": {
+        "source": "groups/9c8bd05c-ce16-46f5-bb36-ab5a63693fdf",
+        "drive": "b!i6NU1ESel0miIa9vYlRNp3g0hnihozxIkX-GPYpN859hUXJx-Zc2R5AQDE-mOVjV",
+        "file": "01XVCWF7Q2SKYJ4H2AXBAIMCZFINJPRIGG",
+        "table": "{00000000-000C-0000-FFFF-FFFF00000000}",
+        "dateTimeFormat": "ISO 8601"
+    }
+}
+Output:
+{
+    "statusCode": 200,
+    "headers": {
+        "Cache-Control": "no-store, no-cache",
+        "Pragma": "no-cache",
+        "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+        "x-ms-islandgateway": "gb00000DP",
+        "x-ms-igw-tracking-id": "01264863-dd49-4804-b6d5-495784c24d5620261127174543gb00000DP",
+        "x-ms-request-id": "0d60eead-a29c-4fde-8df2-d02866e7c5d6;30d4ac2e-d9a3-4ac9-a732-fc252c3987e3;2bd50ed0-b4da-473c-af91-21546f6f9117;af250c27-5d15-49d1-a00b-ddc32034cc61",
+        "x-ms-correlation-id": "9068ded0-b432-4010-9fef-b7341a583db1",
+        "odata-version": "4.0",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Server-Timing": "x-ms-igw-upstream-headers;dur=214.0,x-ms-igw-req-overhead;dur=2.0",
+        "x-ms-service-request-id": "01264863-dd49-4804-b6d5-495784c24d56",
+        "x-ms-activity-vector": "00.00.IN.35.IN.26.00",
+        "x-ms-environment-id": "default-46bb22b8-4c2c-40ff-8360-7b6334821279",
+        "x-ms-tenant-id": "46bb22b8-4c2c-40ff-8360-7b6334821279",
+        "x-ms-subscription-id": "Default-46bb22b8-4c2c-40ff-8360-7b6334821279",
+        "x-ms-dlp-re": "-|-|-",
+        "x-ms-dlp-gu": "-|-",
+        "x-ms-dlp-ef": "-|-/-|-|-|-|-",
+        "x-ms-atg-re": "-|-|-",
+        "x-ms-mip-sl": "-|-|-|-",
+        "x-ms-au-creator-id": "3f02857f-6ba3-4c2e-ae68-2f7e332bb778",
+        "x-ms-plex-worker-metadata": "excelonlinebusiness/bucket:6",
+        "Timing-Allow-Origin": "*",
+        "x-ms-apihub-cached-response": "true",
+        "x-ms-apihub-obo": "false",
+        "x-ms-plex-failed": "false",
+        "Date": "Fri, 27 Nov 2026 17:45:43 GMT",
+        "Content-Length": "689",
+        "Content-Type": "application/json; odata.metadata=minimal; odata.streaming=true",
+        "Expires": "-1"
+    },
+    "body": {
+        "@odata.context": "https://172.20.4.97:9001/$metadata#drives('b%21i6NU1ESel0miIa9vYlRNp3g0hnihozxIkX-GPYpN859hUXJx-Zc2R5AQDE-mOVjV')/Files('01XVCWF7Q2SKYJ4H2AXBAIMCZFINJPRIGG')/Tables('%7B00000000-000C-0000-FFFF-FFFF00000000%7D')/items",
+        "value": [
+            {
+                "@odata.etag": "",
+                "ItemInternalId": "0b5189cd-34b8-4bd5-bebd-dbe7ec5e86b8",
+                "Correo": "3",
+                "Usuario": "8",
+                "Razon envio mensaje": "5"
+            },
+            {
+                "@odata.etag": "",
+                "ItemInternalId": "213336ca-c2e3-4925-802c-95e39620f810",
+                "Correo": "U",
+                "Usuario": "s",
+                "Razon envio mensaje": "u"
+            },
+            {
+                "@odata.etag": "",
+                "ItemInternalId": "b36b7c58-c316-442f-bfbe-12cb2806f417",
+                "Correo": "M",
+                "Usuario": "u",
+                "Razon envio mensaje": "y"
+            }
+        ]
+    }
+}
+
+Create HTML table -> 
+Input:
+{
+    "from": [
+        {
+            "@odata.etag": "",
+            "ItemInternalId": "0b5189cd-34b8-4bd5-bebd-dbe7ec5e86b8",
+            "Correo": "3",
+            "Usuario": "8",
+            "Razon envio mensaje": "5"
+        },
+        {
+            "@odata.etag": "",
+            "ItemInternalId": "213336ca-c2e3-4925-802c-95e39620f810",
+            "Correo": "U",
+            "Usuario": "s",
+            "Razon envio mensaje": "u"
+        },
+        {
+            "@odata.etag": "",
+            "ItemInternalId": "b36b7c58-c316-442f-bfbe-12cb2806f417",
+            "Correo": "M",
+            "Usuario": "u",
+            "Razon envio mensaje": "y"
+        }
+    ],
+    "format": "Html"
+}
+output:
+{
+    "body": "<table><thead><tr><th>Nombre</th><th>Correo</th><th>Razon envio mensaje</th></tr></thead><tbody><tr><td>8</td><td>3</td><td>5</td></tr><tr><td>s</td><td>U</td><td>u</td></tr><tr><td>u</td><td>M</td><td>y</td></tr></tbody></table>"
+}
+
+For each->
+{
+    "foreachItems": [
+        {
+            "@odata.etag": "",
+            "ItemInternalId": "0b5189cd-34b8-4bd5-bebd-dbe7ec5e86b8",
+            "Correo": "3",
+            "Usuario": "8",
+            "Razon envio mensaje": "5"
+        },
+        {
+            "@odata.etag": "",
+            "ItemInternalId": "213336ca-c2e3-4925-802c-95e39620f810",
+            "Correo": "U",
+            "Usuario": "s",
+            "Razon envio mensaje": "u"
+        },
+        {
+            "@odata.etag": "",
+            "ItemInternalId": "b36b7c58-c316-442f-bfbe-12cb2806f417",
+            "Correo": "M",
+            "Usuario": "u",
+            "Razon envio mensaje": "y"
+        }
+    ]
+}
+
+Correo ->
+Input:
+{
+    "host": {
+        "connectionReferenceName": "shared_office365",
+        "operationId": "SendEmailV2"
+    },
+    "parameters": {
+        "emailMessage/To": "3",
+        "emailMessage/Subject": "Estatus de Viki",
+        "emailMessage/Body": "<p class=\"editor-paragraph\">5</p>",
+        "emailMessage/Importance": "Normal"
+    }
+}
+
+Output:
+No hay 
+ERROR:
+Flow run failed. Action 'Send_an_email_(V2)' failed: The 'inputs.parameters' of workflow operation 'Send_an_email_(V2)' of type 'OpenApiConnection' is not valid. Error details: Input parameter 'emailMessage/To' is required to be of type 'String/email'. The runtime value '"3"' to be converted doesn't have the expected format 'string/email'.
