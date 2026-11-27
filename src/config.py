@@ -9,12 +9,19 @@ DATA = RAIZ / "data"
 BD_VIKI = DATA / "Archivos de Jhon Jairo Martinez Gonzalez - DB_VIKI"
 
 ALERTAS = DATA / "Gerencia de Mejora continua de Procesos - data_alertas"
-EXCEL_ALERTAS = local.EXCEL_ALERTAS
 DATA_CONTACTO = DATA / "data_contacto.json"
-EXCEL_CARPETA_COPIAS= Path(EXCEL_ALERTAS).parent /"exceles"
 MONITOREO_CARPETA= local.CARPETA_EXCELES
 
-EXCEL_CARPETA_COPIAS = Path(EXCEL_ALERTAS).parent / ""
+# Excel PLANTILLA (molde): solo encabezados + tabla vacía. Vive en el proyecto, FUERA de la carpeta
+# que vigila Power Automate; si estuviera adentro, cada copia nace con lo que tenga el molde y el
+# flujo se dispara con eso antes de que Python escriba. Se crea con:  python -m src.correos crear-plantilla
+EXCEL_PLANTILLA = Path(getattr(local, "EXCEL_PLANTILLA", RAIZ / "plantillas" / "Alertas_GenXXI.xlsx"))
+EXCEL_ALERTAS = EXCEL_PLANTILLA   # nombre que usa main.py
+
+# Carpeta que vigila el desencadenador del flujo (en OneDrive). Aquí solo caen archivos ya terminados.
+# En local.py:  CARPETA_ALERTAS = r"D:\OneDrive - ...\data_alertas"
+# (si local.py aún no la tiene, se usa la carpeta del EXCEL_ALERTAS viejo)
+EXCEL_CARPETA_COPIAS = Path(getattr(local, "CARPETA_ALERTAS", None) or Path(local.EXCEL_ALERTAS).parent)
 
 
 #-----------Restricciones valores para el modulo correo---------------------------

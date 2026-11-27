@@ -1,5 +1,6 @@
 import json
 import shutil
+import tempfile
 from pathlib import Path
 import time
 import datetime
@@ -151,7 +152,7 @@ def columnas_tabla(path_excel, hoja, nombre_tabla):
 
 
 def extraer_y_montar_correos(
-    path_excel, hoja, nombre_tabla, filas, reintentos = 5
+    path_excel, hoja, nombre_tabla, filas, reintentos = 5, sincronizar = True
 ):
     wb = load_workbook(path_excel)
     ws = wb[hoja]
@@ -166,9 +167,12 @@ def extraer_y_montar_correos(
         filas = [(fila[0], nuevo, *fila[2:]) for fila in filas]
         print(f"[Correos] ({datetime.datetime.now().timestamp()}) Segundo campo: {anterior!r} -> {nuevo!r}")
 
-    #borramos los registros ya hechos
-    for r in range(min_row + 1, max_row + 1):
-        for c in range(min_col, max_col + 1):
+    #borramos los registros ya hechos y cualquier residuo por debajo o al lado de la tabla
+    for r in range(min_row + 1, max(max_row, ws.max_row) + 1):
+        for c in range(min_col, max(max_col, ws.max_column) + 1):
+            ws.cell(r, c).value = None
+    for r in range(1, min_row + 1):  # residuos a la derecha de los encabezados
+        for c in range(max_col + 1, ws.max_column + 1):
             ws.cell(r, c).value = None
 
     #escribir nuevos
@@ -188,7 +192,8 @@ def extraer_y_montar_correos(
         try:
             wb.save(path_excel)
             print(f"[Correos] ({datetime.datetime.now().timestamp()}) Archivo {path_excel} actualizado")
-            onedrive.forzar_sincronizacion(path_excel)
+            if sincronizar:
+                onedrive.forzar_sincronizacion(path_excel)
             return
         
         except PermissionError:
@@ -199,43 +204,102 @@ def extraer_y_montar_correos(
 
     pass
 
+def _esta_dentro(ruta, carpeta):
+    """True si ruta está dentro de carpeta (o en ella)."""
+    try:
+        Path(ruta).resolve().relative_to(Path(carpeta).resolve())
+        return True
+    except ValueError:
+        return False
+
+
 def crear_copia_excel(path_excel_base, carpeta_destino=None):
     """
-    Copia el Excel base (con su hoja y su tabla tal cual) a la carpeta de copias,
-    con nombre único por ejecución: Alertas_GenXXI_aaaa-mm-dd-hh-mm-ss-mmm.xlsx
-    El archivo base no se modifica.
+    Arma la copia COMPLETA en una carpeta temporal fuera de OneDrive y devuelve su ruta.
+    Nombre único por ejecución: Alertas_GenXXI_aaaa-mm-dd-hh-mm-ss-mmm.xlsx
+    El archivo base (plantilla) no se modifica.
     """
     base = Path(path_excel_base)
-    carpeta = Path(carpeta_destino) if carpeta_destino else config.EXCEL_CARPETA_COPIAS
-    carpeta.mkdir(parents=True, exist_ok=True)
-
     sello = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S-%f")[:-3]
-    destino = carpeta / f"{base.stem}_{sello}{base.suffix}"
-
-    shutil.copyfile(base, destino)  # copia completa del archivo: la tabla viaja dentro
-    print(f"[Correos] ({datetime.datetime.now().timestamp()}) Copia creada: {destino}")
-    return destino
+    temporal = Path(tempfile.mkdtemp(prefix="genxxi_")) / f"{base.stem}_{sello}{base.suffix}"
+    shutil.copyfile(base, temporal)  # copia completa del archivo: la tabla viaja dentro
+    return temporal
 
 
 def crear_y_montar_correos(
     path_excel_base, hoja, nombre_tabla, filas, carpeta_destino=None
 ):
     """
-    Crea una copia nueva del Excel en la carpeta de copias y escribe las filas en ella.
-    Las filas se validan ANTES de crear la copia; y si la escritura falla, la copia se borra
-    para que OneDrive no suba un archivo a medias que dispare el flujo.
-    """
-    filas = normalizar_filas(filas, columnas_tabla(path_excel_base, hoja, nombre_tabla))
+    Escribe las filas en un Excel nuevo y lo deja en la carpeta que vigila el flujo.
 
-    destino = crear_copia_excel(path_excel_base, carpeta_destino)
+    Orden (importa): validar filas -> copiar la plantilla a una carpeta TEMPORAL fuera de OneDrive
+    -> escribir y guardar ahí -> mover el archivo ya terminado a la carpeta vigilada.
+    Así OneDrive y Power Automate solo ven el archivo cuando ya tiene el contenido final; antes
+    la copia aparecía en la carpeta con lo que tuviera la plantilla y el flujo se disparaba con eso.
+    """
+    base = Path(path_excel_base)
+    carpeta = Path(carpeta_destino) if carpeta_destino else Path(config.EXCEL_CARPETA_COPIAS)
+
+    if _esta_dentro(base, carpeta):
+        raise RuntimeError(
+            f"La plantilla {base} está dentro de la carpeta que vigila el flujo ({carpeta}). "
+            "Sácala de ahí: corre  python -m src.correos crear-plantilla  y pon CARPETA_ALERTAS en local.py"
+        )
+
+    filas = normalizar_filas(filas, columnas_tabla(base, hoja, nombre_tabla))
+
+    temporal = crear_copia_excel(base, carpeta)
     try:
-        extraer_y_montar_correos(destino, hoja, nombre_tabla, filas)
-    except Exception:
-        Path(destino).unlink(missing_ok=True)
-        _log(f"Falló la escritura, se borró la copia {destino} para que no se sincronice")
-        raise
+        extraer_y_montar_correos(temporal, hoja, nombre_tabla, filas, sincronizar=False)
+        carpeta.mkdir(parents=True, exist_ok=True)
+        destino = carpeta / temporal.name
+        shutil.move(str(temporal), str(destino))  # aparece en OneDrive ya terminado
+        _log(f"Excel listo en la carpeta del flujo: {destino}")
+    finally:
+        shutil.rmtree(temporal.parent, ignore_errors=True)
+
+    onedrive.forzar_sincronizacion(destino)
 
     for i, fila in enumerate(filas, start=1):
         guardar_vista_previa(fila[-1], f"{destino.stem}_fila{i}")
     return destino
 
+
+def crear_plantilla(origen, destino=None, hoja="HojaAlertasCorreo", nombre_tabla="TablaAlertas"):
+    """
+    Crea la plantilla limpia a partir de un Excel existente (por ejemplo el que está hoy en OneDrive):
+    deja los encabezados y la tabla con una fila vacía, y borra cualquier dato o residuo.
+    """
+    destino = Path(destino or config.EXCEL_PLANTILLA)
+    wb = load_workbook(origen)
+    ws = wb[hoja]
+    tbl = ws.tables[nombre_tabla]
+    min_col, min_row, max_col, max_row = range_boundaries(tbl.ref)
+
+    for r in range(1, max(max_row, ws.max_row) + 1):
+        for c in range(1, max(max_col, ws.max_column) + 1):
+            dentro_encabezado = r == min_row and min_col <= c <= max_col
+            if not dentro_encabezado:
+                ws.cell(r, c).value = None
+
+    tbl.ref = f"{get_column_letter(min_col)}{min_row}:{get_column_letter(max_col)}{min_row + 1}"
+    if tbl.autoFilter is not None:
+        tbl.autoFilter.ref = tbl.ref
+
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    wb.save(destino)
+    encabezados = [ws.cell(min_row, c).value for c in range(min_col, max_col + 1)]
+    _log(f"Plantilla creada en {destino} con columnas {encabezados}")
+    return destino
+
+
+if __name__ == "__main__":
+    # Desde la raíz del proyecto:
+    #   python -m src.correos crear-plantilla                 -> usa el EXCEL_ALERTAS de local.py como origen
+    #   python -m src.correos crear-plantilla "ruta\otro.xlsx"
+    import sys
+    if len(sys.argv) >= 2 and sys.argv[1] == "crear-plantilla":
+        origen = sys.argv[2] if len(sys.argv) >= 3 else __import__("src.local", fromlist=["x"]).EXCEL_ALERTAS
+        crear_plantilla(origen)
+    else:
+        print("Uso: python -m src.correos crear-plantilla [ruta_excel_origen]")
