@@ -1,8 +1,8 @@
 import src.local as local
-
 from pathlib import Path
 
-RAIZ = Path(__file__).resolve().parents[1]
+
+RAIZ = Path(__file__).resolve().parents[1] 
 
 DATA = RAIZ / "data"
 
@@ -10,7 +10,9 @@ BD_VIKI = DATA / "Archivos de Jhon Jairo Martinez Gonzalez - DB_VIKI"
 
 ALERTAS = DATA / "Gerencia de Mejora continua de Procesos - data_alertas"
 EXCEL_ALERTAS = local.EXCEL_ALERTAS
-DATA_CONTACTO = ALERTAS / "data_contacto.json"
+DATA_CONTACTO = DATA / "data_contacto.json"
+EXCEL_CARPETA_COPIAS= Path(EXCEL_ALERTAS).parent /"exceles"
+MONITOREO_CARPETA= local.CARPETA_EXCELES
 
 EXCEL_CARPETA_COPIAS = Path(EXCEL_ALERTAS).parent / ""
 
@@ -76,6 +78,7 @@ COPILOT_TIMEOUT_RESPUESTA = 240     # máximo esperando a que Copilot termine de
 COPILOT_ESTABILIDAD_RESPUESTA = 4   # la respuesta debe quedar quieta este tiempo para darla por terminada
 COPILOT_INTERVALO_SONDEO = 1
 COPILOT_REINTENTOS = 3
+INTERVALO_INSPECCION = 15
 
 # Aviso si el prompt armado supera esta longitud (Copilot corta o rechaza prompts muy largos)
 COPILOT_MAX_CARACTERES = 16000
