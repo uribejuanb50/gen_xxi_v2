@@ -226,6 +226,26 @@ def crear_copia_excel(path_excel_base, carpeta_destino=None):
     return temporal
 
 
+def copiar_a_subcarpeta(archivo, subcarpeta=None):
+    """
+    Deja una copia del Excel ya terminado en config.EXCEL_CARPETA_SINCRONIZACION
+    para obligar a OneDrive a sincronizar. Si falla, solo avisa: el archivo del flujo ya quedó.
+    """
+    subcarpeta = subcarpeta or config.EXCEL_CARPETA_SINCRONIZACION
+    if not subcarpeta:
+        return None
+    try:
+        subcarpeta = Path(subcarpeta)
+        subcarpeta.mkdir(parents=True, exist_ok=True)
+        copia = subcarpeta / Path(archivo).name
+        shutil.copyfile(archivo, copia)
+        _log(f"Copia para sincronización: {copia}")
+        return copia
+    except OSError as e:
+        _log(f"No se pudo dejar la copia en {subcarpeta} ({e}); el archivo del flujo sí quedó")
+        return None
+
+
 def crear_y_montar_correos(
     path_excel_base, hoja, nombre_tabla, filas, carpeta_destino=None
 ):
@@ -258,6 +278,7 @@ def crear_y_montar_correos(
     finally:
         shutil.rmtree(temporal.parent, ignore_errors=True)
 
+    copiar_a_subcarpeta(destino)
     onedrive.forzar_sincronizacion(destino)
 
     for i, fila in enumerate(filas, start=1):

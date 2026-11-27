@@ -23,6 +23,11 @@ EXCEL_ALERTAS = EXCEL_PLANTILLA   # nombre que usa main.py
 # (si local.py aún no la tiene, se usa la carpeta del EXCEL_ALERTAS viejo)
 EXCEL_CARPETA_COPIAS = Path(getattr(local, "CARPETA_ALERTAS", None) or Path(local.EXCEL_ALERTAS).parent)
 
+# Subcarpeta donde además se deja una copia del Excel ya terminado, solo para obligar a OneDrive
+# a sincronizar. El flujo NO vigila subcarpetas, así que esta copia no lo dispara otra vez.
+# None -> no se hace la copia extra.
+EXCEL_CARPETA_SINCRONIZACION = EXCEL_CARPETA_COPIAS / "exceles"
+
 
 #-----------Restricciones valores para el modulo correo---------------------------
 
