@@ -206,7 +206,8 @@ def _a_correo(contenido, importancia):
     """Convierte el contenido de Copilot en el cuerpo final del correo (HTML con la plantilla)."""
     if isinstance(contenido, dict):
         return plantilla_correo.armar_correo_html(contenido, importancia)
-    return contenido
+    # formato viejo (texto corrido): también va con la plantilla, nunca como texto plano
+    return plantilla_correo.texto_a_html(contenido, importancia)
 
 
 def _extraer_respuestas(texto_pagina):

@@ -1,0 +1,254 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram id="genxxi-bpmn" name="BPMN GenXXI">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="3200" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="titulo" value="&lt;b&gt;Flujo BPMN · Sistema de Alertas GenXXI&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:12px;color:#5D616D'&gt;Todas las tareas son de servicio (automatizadas). En pruebas, el disparador se emula ejecutando main.py desde el CMD.&lt;/span&gt;" style="text;html=1;align=left;verticalAlign=top;fontSize=20;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="20" y="8" width="900" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="pool" value="Sistema de Alertas GenXXI · proceso 100 % automatizado" style="swimlane;html=1;horizontal=0;startSize=40;fontStyle=1;fontSize=13;fillColor=#FFFFFF;swimlaneFillColor=none;strokeColor=#1B1C21;" vertex="1" parent="1">
+          <mxGeometry x="20" y="70" width="3160" height="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="lane_fuentes" value="&lt;b&gt;Fuentes de datos&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:11px;color:#5D616D'&gt;Nodos extractores&lt;/span&gt;" style="swimlane;html=1;horizontal=0;startSize=50;fontSize=13;swimlaneFillColor=#FFFFFF;fillColor=#FFFFFF;strokeColor=#C8CAD2;" vertex="1" parent="pool">
+          <mxGeometry x="40" y="0" width="3120" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="lane_onedrive" value="&lt;b&gt;OneDrive / SharePoint&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:11px;color:#5D616D'&gt;Conexión nube ↔ local&lt;/span&gt;" style="swimlane;html=1;horizontal=0;startSize=50;fontSize=13;swimlaneFillColor=#F6F6F8;fillColor=#F6F6F8;strokeColor=#C8CAD2;" vertex="1" parent="pool">
+          <mxGeometry x="40" y="140" width="3120" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="lane_python" value="&lt;b&gt;Python · nodo padre&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:11px;color:#5D616D'&gt;Servicio en segundo plano&lt;/span&gt;" style="swimlane;html=1;horizontal=0;startSize=50;fontSize=13;swimlaneFillColor=#FFFFFF;fillColor=#FFFFFF;strokeColor=#C8CAD2;" vertex="1" parent="pool">
+          <mxGeometry x="40" y="290" width="3120" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="lane_copilot" value="&lt;b&gt;Microsoft 365 Copilot&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:11px;color:#5D616D'&gt;IA generativa&lt;/span&gt;" style="swimlane;html=1;horizontal=0;startSize=50;fontSize=13;swimlaneFillColor=#F6F6F8;fillColor=#F6F6F8;strokeColor=#C8CAD2;" vertex="1" parent="pool">
+          <mxGeometry x="40" y="580" width="3120" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="lane_automate" value="&lt;b&gt;Power Automate&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:11px;color:#5D616D'&gt;Flujo en la nube&lt;/span&gt;" style="swimlane;html=1;horizontal=0;startSize=50;fontSize=13;swimlaneFillColor=#FFFFFF;fillColor=#FFFFFF;strokeColor=#C8CAD2;" vertex="1" parent="pool">
+          <mxGeometry x="40" y="730" width="3120" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="lane_equipo" value="&lt;b&gt;Equipo responsable&lt;/b&gt;&lt;br&gt;&lt;span style='font-size:11px;color:#5D616D'&gt;Destinatarios&lt;/span&gt;" style="swimlane;html=1;horizontal=0;startSize=50;fontSize=13;swimlaneFillColor=#F6F6F8;fillColor=#F6F6F8;strokeColor=#C8CAD2;" vertex="1" parent="pool">
+          <mxGeometry x="40" y="880" width="3120" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="Nuevo registro&lt;br&gt;de KPI" style="shape=mxgraph.bpmn.event;html=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;perimeter=ellipsePerimeter;outlineConnect=0;aspect=fixed;fontSize=11;fillColor=#FFFFFF;outline=standard;symbol=timer;" vertex="1" parent="lane_fuentes">
+          <mxGeometry x="64" y="52" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="t1" value="Extraer KPI y publicar archivo" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_fuentes">
+          <mxGeometry x="144" y="30" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t2" value="Sincronizar&lt;br&gt;nube → local" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_onedrive">
+          <mxGeometry x="304" y="35" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ev" value="Archivo nuevo&lt;br&gt;detectado" style="shape=mxgraph.bpmn.event;html=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;perimeter=ellipsePerimeter;outlineConnect=0;aspect=fixed;fontSize=11;fillColor=#FFFFFF;outline=catching;symbol=message;" vertex="1" parent="lane_python">
+          <mxGeometry x="502" y="107" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="t4" value="Leer y validar datos" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_python">
+          <mxGeometry x="582" y="85" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t5" value="Análisis superficial&lt;br&gt;(contexto + registro)" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_python">
+          <mxGeometry x="737" y="85" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t6" value="Construir prompt&lt;br&gt;(plantilla config)" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_python">
+          <mxGeometry x="892" y="85" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t7" value="Abrir Copilot y enviar prompt (Selenium)" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_python">
+          <mxGeometry x="1047" y="85" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="g1" value="" style="shape=mxgraph.bpmn.gateway2;html=1;verticalLabelPosition=top;verticalAlign=bottom;align=center;perimeter=rhombusPerimeter;outlineConnect=0;outline=none;symbol=none;fontSize=11;fillColor=#FFFFFF;gwType=parallel;" vertex="1" parent="lane_python">
+          <mxGeometry x="1220" y="100" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="t9" value="Sondear la respuesta&lt;br&gt;(lecturas)" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_python">
+          <mxGeometry x="1297" y="85" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t8" value="Analizar registro y decidir importancia" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_copilot">
+          <mxGeometry x="1297" y="35" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t10" value="Redactar contenido&lt;br&gt;(JSON)" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_copilot">
+          <mxGeometry x="1457" y="35" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="g2" value="" style="shape=mxgraph.bpmn.gateway2;html=1;verticalLabelPosition=top;verticalAlign=bottom;align=center;perimeter=rhombusPerimeter;outlineConnect=0;outline=none;symbol=none;fontSize=11;fillColor=#FFFFFF;gwType=parallel;" vertex="1" parent="lane_python">
+          <mxGeometry x="1630" y="100" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="t11" value="Extraer correo&lt;br&gt;e importancia" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_python">
+          <mxGeometry x="1707" y="85" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="g3" value="¿Respuesta&lt;br&gt;válida?" style="shape=mxgraph.bpmn.gateway2;html=1;verticalLabelPosition=top;verticalAlign=bottom;align=center;perimeter=rhombusPerimeter;outlineConnect=0;outline=none;symbol=none;fontSize=11;fillColor=#FFFFFF;gwType=exclusive;" vertex="1" parent="lane_python">
+          <mxGeometry x="1885" y="100" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="terr" value="Guardar debug&lt;br&gt;(HTML + pantallazo)" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#FF1221;dashed=1;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_python">
+          <mxGeometry x="1972" y="198" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="fin_err" value="Fallo&lt;br&gt;registrado" style="shape=mxgraph.bpmn.event;html=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;perimeter=ellipsePerimeter;outlineConnect=0;aspect=fixed;fontSize=11;fillColor=#FFFFFF;outline=end;symbol=error;strokeColor=#FF1221;" vertex="1" parent="lane_python">
+          <mxGeometry x="2152" y="220" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="t12" value="Armar correo HTML&lt;br&gt;(plantilla)" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_python">
+          <mxGeometry x="1972" y="85" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t13" value="Leer encargados y crear copia en exceles/" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_python">
+          <mxGeometry x="2127" y="85" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t14" value="Forzar sincronización OneDrive" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_python">
+          <mxGeometry x="2282" y="85" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t15" value="Sincronizar&lt;br&gt;local → nube" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_onedrive">
+          <mxGeometry x="2442" y="35" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="evpa" value="Archivo creado&lt;br&gt;en exceles/" style="shape=mxgraph.bpmn.event;html=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;perimeter=ellipsePerimeter;outlineConnect=0;aspect=fixed;fontSize=11;fillColor=#FFFFFF;outline=catching;symbol=message;" vertex="1" parent="lane_automate">
+          <mxGeometry x="2632" y="57" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="t17" value="Leer filas de&lt;br&gt;TablaAlertas" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_automate">
+          <mxGeometry x="2702" y="35" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="t18" value="Enviar correo&lt;br&gt;(Outlook)" style="shape=mxgraph.bpmn.task;taskMarker=service;html=1;whiteSpace=wrap;rectStyle=rounded;size=10;fontSize=12;fillColor=#FFFFFF;strokeColor=#1B1C21;strokeWidth=1.5;container=1;expand=0;collapsible=0;" vertex="1" parent="lane_automate">
+          <mxGeometry x="2857" y="35" width="136" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="fin" value="Alerta&lt;br&gt;recibida" style="shape=mxgraph.bpmn.event;html=1;verticalLabelPosition=bottom;verticalAlign=top;align=center;perimeter=ellipsePerimeter;outlineConnect=0;aspect=fixed;fontSize=11;fillColor=#FFFFFF;outline=end;symbol=message;" vertex="1" parent="lane_equipo">
+          <mxGeometry x="3037" y="42" width="36" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="f1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="e1" target="t1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f2" value="archivo en SharePoint" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="t1" target="t2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="432" y="140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="t2" target="ev">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="580" y="285" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="ev" target="t4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t4" target="t5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t5" target="t6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t6" target="t7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t7" target="g1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="g1" target="t9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f10" value="prompt enviado" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="g1" target="t8">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1305" y="725" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t8" target="t10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f12" value="respuesta en pantalla" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="t10" target="g2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1715" y="725" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t9" target="g2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="g2" target="t11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t11" target="g3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f16" value="Sí" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="g3" target="t12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f17" value="No · reintentar en chat nuevo (máx. 3)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="g3" target="t7">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1970" y="388" />
+              <mxPoint x="1175" y="388" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f18" value="No · 3 intentos" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="g3" target="terr">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1970" y="598" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f19" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="terr" target="fin_err">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f20" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t12" target="t13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f21" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t13" target="t14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="t14" target="t15">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2570" y="485" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f23" value="archivo nuevo en la nube" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="t15" target="evpa">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2710" y="285" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f24" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="evpa" target="t17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f25" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="t17" target="t18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f26" value="correo HTML" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;fontColor=#5D616D;strokeColor=#1B1C21;labelBackgroundColor=#FFFFFF;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="t18" target="fin">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="3115" y="875" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="a1" value="Disparador del proceso.&lt;br&gt;En pruebas se emula&lt;br&gt;ejecutando main.py en el CMD." style="shape=partialRectangle;html=1;top=1;bottom=1;left=1;right=0;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;whiteSpace=wrap;fontSize=11;fontColor=#5D616D;strokeColor=#5D616D;" vertex="1" parent="1">
+          <mxGeometry x="430" y="552" width="209" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="as1" value="" style="endArrow=none;dashed=1;dashPattern=1 4;html=1;strokeColor=#5D616D;" edge="1" parent="1" source="a1" target="ev">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" value="Edge en segundo plano&lt;br&gt;con perfil propio&lt;br&gt;(sesión guardada)." style="shape=partialRectangle;html=1;top=1;bottom=1;left=1;right=0;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;whiteSpace=wrap;fontSize=11;fontColor=#5D616D;strokeColor=#5D616D;" vertex="1" parent="1">
+          <mxGeometry x="1065" y="552" width="157" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="as2" value="" style="endArrow=none;dashed=1;dashPattern=1 4;html=1;strokeColor=#5D616D;" edge="1" parent="1" source="a2" target="t7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" value="Python sondea la página&lt;br&gt;cada segundo mientras&lt;br&gt;Copilot genera." style="shape=partialRectangle;html=1;top=1;bottom=1;left=1;right=0;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;whiteSpace=wrap;fontSize=11;fontColor=#5D616D;strokeColor=#5D616D;" vertex="1" parent="1">
+          <mxGeometry x="1385" y="552" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="as3" value="" style="endArrow=none;dashed=1;dashPattern=1 4;html=1;strokeColor=#5D616D;" edge="1" parent="1" source="a3" target="t9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a4" value="Cliente OneDrive local:&lt;br&gt;puente nube ↔ PC." style="shape=partialRectangle;html=1;top=1;bottom=1;left=1;right=0;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;whiteSpace=wrap;fontSize=11;fontColor=#5D616D;strokeColor=#5D616D;" vertex="1" parent="1">
+          <mxGeometry x="162" y="254" width="170" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="as4" value="" style="endArrow=none;dashed=1;dashPattern=1 4;html=1;strokeColor=#5D616D;" edge="1" parent="1" source="a4" target="t2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="a5" value="Disparador en Power Automate:&lt;br&gt;'Cuando se crea un archivo'." style="shape=partialRectangle;html=1;top=1;bottom=1;left=1;right=0;fillColor=none;align=left;verticalAlign=middle;spacingLeft=6;whiteSpace=wrap;fontSize=11;fontColor=#5D616D;strokeColor=#5D616D;" vertex="1" parent="1">
+          <mxGeometry x="2770" y="678" width="209" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="as5" value="" style="endArrow=none;dashed=1;dashPattern=1 4;html=1;strokeColor=#5D616D;" edge="1" parent="1" source="a5" target="evpa">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -5,11 +5,18 @@ Arma el cuerpo HTML del correo de alerta a partir del contenido que devuelve Cop
 Copilot pone el contenido (título, resumen, hallazgos, impacto, acciones) y este módulo
 pone la forma: franja de color según importancia, negrillas, secciones y espaciado.
 
-HTML pensado para Outlook: tablas y estilos en línea (Outlook ignora CSS externo y <style>).
+HTML pensado para Outlook (escritorio usa el motor de Word):
+- solo tablas y estilos en línea (Outlook ignora <style>, CSS externo, display, max-width...)
+- los colores de fondo van también como atributo bgcolor, que es lo único que Outlook respeta siempre
+- el resultado sale en UNA sola línea (compactar_html): el correo pasa por una celda de Excel
+  y por Power Automate, y los saltos de línea entre etiquetas terminan convertidos en <br>
+  sueltos o en espacios que desarman la tabla.
 
 Uso:
     html = armar_correo_html(datos, "ALTA")
     # datos = {"titulo": ..., "resumen": ..., "hallazgos": [...], "impacto": ..., "acciones": [...]}
+
+    html = texto_a_html("texto plano de respaldo", "MEDIA")   # si Copilot no devolvió el JSON por partes
 """
 
 import re
@@ -19,11 +26,24 @@ import datetime
 import src.config as config
 
 
+FUENTE = "font-family:'Segoe UI',Arial,sans-serif;"
+
+
 def _formatear(texto):
     """Escapa el texto y convierte **negrilla** en <b>negrilla</b> y los saltos de línea en <br>."""
     seguro = html.escape(str(texto or "").strip())
     seguro = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", seguro)
-    return seguro.replace("\n", "<br>")
+    return seguro.replace("\r\n", "\n").replace("\n", "<br>")
+
+
+def compactar_html(codigo):
+    """
+    Deja el HTML en una sola línea sin cambiar lo que se ve.
+    Solo quita los saltos de línea (y la sangría que los rodea) de la plantilla; el texto de
+    Copilot ya llega sin saltos (_formatear los vuelve <br>), así que no se pierden espacios
+    entre palabras, por ejemplo entre dos negrillas seguidas.
+    """
+    return re.sub(r"[ \t]*[\r\n]+[ \t]*", "", codigo.strip())
 
 
 def _lista(items, ordenada=False):
@@ -34,7 +54,7 @@ def _lista(items, ordenada=False):
     filas = "".join(
         f'<li style="margin:0 0 8px 0;">{_formatear(i)}</li>' for i in items
     )
-    return f'<{etiqueta} style="margin:0;padding-left:22px;">{filas}</{etiqueta}>'
+    return f'<{etiqueta} style="margin:0 0 0 22px;padding:0;">{filas}</{etiqueta}>'
 
 
 def _seccion(titulo, contenido_html):
@@ -42,15 +62,27 @@ def _seccion(titulo, contenido_html):
         return ""
     return (
         '<tr><td style="padding:0 32px 22px 32px;">'
-        f'<div style="font-size:12px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;'
-        f'color:#6B7280;margin:0 0 8px 0;">{titulo}</div>'
-        f'<div style="font-size:14px;line-height:1.6;color:#1F2937;">{contenido_html}</div>'
+        f'<p style="margin:0 0 8px 0;font-size:12px;font-weight:bold;letter-spacing:1px;'
+        f'text-transform:uppercase;color:#6B7280;{FUENTE}">{titulo}</p>'
+        f'<div style="font-size:14px;line-height:1.6;color:#1F2937;{FUENTE}">{contenido_html}</div>'
         "</td></tr>"
     )
 
 
+def _caja_impacto(texto, color):
+    """Caja gris con borde de color a la izquierda (hecha con tabla: Outlook no respeta border-left en div)."""
+    if not str(texto or "").strip():
+        return ""
+    return (
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">'
+        f'<tr><td width="4" bgcolor="{color}" style="background-color:{color};width:4px;font-size:0;line-height:0;">&nbsp;</td>'
+        f'<td bgcolor="#F9FAFB" style="background-color:#F9FAFB;padding:12px 16px;font-size:14px;'
+        f'line-height:1.6;color:#1F2937;{FUENTE}">{_formatear(texto)}</td></tr></table>'
+    )
+
+
 def armar_correo_html(datos, importancia):
-    """Devuelve el HTML completo del correo."""
+    """Devuelve el HTML completo del correo, en una sola línea."""
     importancia = str(importancia).upper()
     color = config.CORREO_COLORES_IMPORTANCIA.get(importancia, "#6B7280")
     fecha = datetime.datetime.now().strftime("%d/%m/%Y %H:%M")
@@ -59,32 +91,43 @@ def armar_correo_html(datos, importancia):
     resumen = _formatear(datos.get("resumen"))
     hallazgos = _lista(datos.get("hallazgos"))
     acciones = _lista(datos.get("acciones"), ordenada=True)
+    impacto = _caja_impacto(datos.get("impacto"), color)
 
-    impacto = ""
-    if str(datos.get("impacto") or "").strip():
-        impacto = (
-            f'<div style="background:#F9FAFB;border-left:4px solid {color};padding:12px 16px;">'
-            f"{_formatear(datos.get('impacto'))}</div>"
-        )
-
-    return f"""<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F3F4F6;padding:24px 0;font-family:'Segoe UI',Arial,sans-serif;">
-<tr><td align="center">
-<table role="presentation" width="640" cellpadding="0" cellspacing="0" style="max-width:640px;width:100%;background:#FFFFFF;border:1px solid #E5E7EB;">
-<tr><td style="background:{color};height:6px;font-size:0;line-height:0;">&nbsp;</td></tr>
+    cuerpo = f"""
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F3F4F6" style="background-color:#F3F4F6;{FUENTE}">
+<tr><td align="center" style="padding:24px 8px;">
+<table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF" style="width:640px;background-color:#FFFFFF;border:1px solid #E5E7EB;">
+<tr><td height="6" bgcolor="{color}" style="height:6px;background-color:{color};font-size:0;line-height:0;">&nbsp;</td></tr>
 <tr><td style="padding:28px 32px 8px 32px;">
-<span style="display:inline-block;background:{color};color:#FFFFFF;font-size:11px;font-weight:bold;letter-spacing:1px;padding:4px 10px;">IMPORTANCIA {html.escape(importancia)}</span>
-<span style="font-size:12px;color:#6B7280;padding-left:8px;">{fecha}</span>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+<td bgcolor="{color}" style="background-color:{color};color:#FFFFFF;font-size:11px;font-weight:bold;letter-spacing:1px;padding:4px 10px;{FUENTE}">IMPORTANCIA {html.escape(importancia)}</td>
+<td style="padding-left:10px;font-size:12px;color:#6B7280;{FUENTE}">{fecha}</td>
+</tr></table>
 </td></tr>
-<tr><td style="padding:8px 32px 18px 32px;font-size:22px;line-height:1.3;font-weight:bold;color:#111827;">{titulo}</td></tr>
-<tr><td style="padding:0 32px 22px 32px;font-size:15px;line-height:1.6;color:#1F2937;">{config.CORREO_SALUDO}<br><br>{resumen}</td></tr>
+<tr><td style="padding:8px 32px 18px 32px;font-size:22px;line-height:1.3;font-weight:bold;color:#111827;{FUENTE}">{titulo}</td></tr>
+<tr><td style="padding:0 32px 22px 32px;font-size:15px;line-height:1.6;color:#1F2937;{FUENTE}">{html.escape(config.CORREO_SALUDO)}<br><br>{resumen}</td></tr>
 {_seccion("Lo que encontramos", hallazgos)}
 {_seccion("Impacto", impacto)}
 {_seccion("Acciones recomendadas", acciones)}
-<tr><td style="padding:8px 32px 28px 32px;font-size:14px;line-height:1.6;color:#1F2937;">Cordialmente,<br><b>{config.CORREO_FIRMA}</b></td></tr>
-<tr><td style="padding:14px 32px;background:#F9FAFB;border-top:1px solid #E5E7EB;font-size:11px;color:#9CA3AF;">{config.CORREO_PIE}</td></tr>
+<tr><td style="padding:8px 32px 28px 32px;font-size:14px;line-height:1.6;color:#1F2937;{FUENTE}">Cordialmente,<br><b>{html.escape(config.CORREO_FIRMA)}</b></td></tr>
+<tr><td bgcolor="#F9FAFB" style="padding:14px 32px;background-color:#F9FAFB;border-top:1px solid #E5E7EB;font-size:11px;color:#9CA3AF;{FUENTE}">{html.escape(config.CORREO_PIE)}</td></tr>
 </table>
 </td></tr>
 </table>"""
+    return compactar_html(cuerpo)
+
+
+def texto_a_html(texto, importancia):
+    """
+    Respaldo: si Copilot devolvió el correo como texto corrido (formato viejo, campo "correo"),
+    igual se manda con la plantilla para que nunca llegue un bloque de texto plano.
+    """
+    return armar_correo_html({"titulo": None, "resumen": texto}, importancia)
+
+
+def es_html(texto):
+    """True si el texto parece un cuerpo HTML (empieza por una etiqueta)."""
+    return bool(re.match(r"\s*<[a-zA-Z!]", str(texto or "")))
 
 
 if __name__ == "__main__":

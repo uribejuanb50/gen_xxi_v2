@@ -173,3 +173,8 @@ CORREO_COLORES_IMPORTANCIA = {
 CORREO_SALUDO = "Hola equipo,"
 CORREO_FIRMA = "Sistema de Alertas GenXXI"
 CORREO_PIE = "Gerencia de Mejora Continua de Procesos · Correo generado automáticamente a partir del monitoreo de KPIs. No responder a este mensaje."
+
+# True -> cada correo que se escribe en el Excel también se guarda como .html en CORREO_CARPETA_VISTAS,
+# para abrirlo en el navegador y comparar con lo que llega al buzón
+CORREO_GUARDAR_VISTA_PREVIA = True
+CORREO_CARPETA_VISTAS = RAIZ / "vistas_correo"

@@ -5,9 +5,57 @@ import time
 import datetime
 from openpyxl import load_workbook
 from openpyxl.utils import range_boundaries, get_column_letter
+from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
 
 import src.config as config
 import src.onedrive as onedrive
+import src.plantilla_correo as plantilla_correo
+
+
+LIMITE_CELDA_EXCEL = 32767  # caracteres máximos que admite una celda de Excel
+
+
+def _log(mensaje):
+    print(f"[Correos] ({datetime.datetime.now().timestamp()}) {mensaje}")
+
+
+def preparar_cuerpo(cuerpo, importancia="BAJA"):
+    """
+    Deja el cuerpo listo para la celda que lee Power Automate:
+    - si no es HTML (texto plano), lo pasa por la plantilla
+    - una sola línea (los saltos de línea se vuelven <br> sueltos al pasar por el flujo)
+    - sin caracteres de control que Excel no acepta
+    - sin pasarse del límite de la celda (si se pasa, Excel/Power Automate lo cortan y el HTML queda roto)
+    """
+    cuerpo = str(cuerpo or "")
+    if not plantilla_correo.es_html(cuerpo):
+        _log("El cuerpo no venía en HTML, se arma con la plantilla")
+        cuerpo = plantilla_correo.texto_a_html(cuerpo, importancia)
+
+    cuerpo = ILLEGAL_CHARACTERS_RE.sub("", plantilla_correo.compactar_html(cuerpo))
+
+    if len(cuerpo) > LIMITE_CELDA_EXCEL:
+        raise ValueError(
+            f"El cuerpo del correo tiene {len(cuerpo)} caracteres y una celda de Excel admite "
+            f"{LIMITE_CELDA_EXCEL}; quedaría cortado y el HTML llegaría roto"
+        )
+    return cuerpo
+
+
+def guardar_vista_previa(cuerpo, nombre):
+    """Guarda el HTML tal cual se escribió en el Excel, para abrirlo en el navegador y compararlo con el correo."""
+    if not config.CORREO_GUARDAR_VISTA_PREVIA:
+        return None
+    carpeta = Path(config.CORREO_CARPETA_VISTAS)
+    carpeta.mkdir(parents=True, exist_ok=True)
+    ruta = carpeta / f"{nombre}.html"
+    ruta.write_text(
+        '<!DOCTYPE html><html><head><meta charset="utf-8"></head>'
+        f'<body style="margin:0;">{cuerpo}</body></html>',
+        encoding="utf-8",
+    )
+    _log(f"Vista previa del correo: {ruta}")
+    return ruta
 
 
 def generar_mensaje_por_importancia( #entra una tanda de perfiles para mandar mensaje por importancia 
@@ -18,8 +66,9 @@ def generar_mensaje_por_importancia( #entra una tanda de perfiles para mandar me
     #por ahora solo hay un tipo de importancai, esto vendría de parte de la IA
 
     correos = "; ".join(profile["correo"] for profile in data_perfil)
+    cuerpo = preparar_cuerpo(mensaje, importancia or "BAJA")
 
-    return [(correos, f"Usuarios_{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f')[:-3]}", mensaje)]
+    return [(correos, f"Usuarios_{datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f')[:-3]}", cuerpo)]
 
 def leer_encargados(
     path_encargados,
@@ -138,6 +187,8 @@ def crear_y_montar_correos(
 ):
     """Crea una copia nueva del Excel en la carpeta de copias y escribe las filas en ella."""
     destino = crear_copia_excel(path_excel_base, carpeta_destino)
+    for i, fila in enumerate(filas, start=1):
+        guardar_vista_previa(fila[2], f"{destino.stem}_fila{i}")
     extraer_y_montar_correos(destino, hoja, nombre_tabla, filas)
     return destino
 
